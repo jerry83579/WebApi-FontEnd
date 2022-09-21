@@ -201,44 +201,74 @@
                 <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
                 <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
             </div>
+
+            <!-- 切換圖層下拉式選單 -->
             <div class="btn-group">
                 <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
                 <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                <!-- 下拉式選單 -->
                 <ul class="dropdown-menu">
                     <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
                     <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
                     <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
                     <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
-
                 </ul>
             </div>
+            <select id="type">
+                <option value="Point">Point</option>
+                <option value="LineString">LineString</option>
+                <option value="Polygon">Polygon</option>
+                <option value="Circle">Circle</option>
+            </select>
         </div>
-
-
     </div>
 
     <script>
-        // console.log(map.getLayers().item(0))
+        var typeSelect = document.getElementById('type');
         var projection = ol.proj.get("EPSG:3826");
         var basemap = 0;
+        var draw, snap;
         let layerWMTS;
         let layerWMS;
         let url;
 
+        // const wkt =
+        //     'POINT(13430611.063396845 2773536.2943428545)';
+        // const format = new ol.format.WKT();
+        // const feature = format.readFeature(wkt, {
+        //     dataProjection: 'EPSG:3826',
+        //     featureProjection: 'EPSG:3857',
+        // });
+        // console.log(feature)
         // 初始化
+        const raster = new ol.layer.Tile({
+            source: new ol.source.OSM(),
+        });
+        var source = new ol.source.Vector();
+        const modify = new ol.interaction.Modify({ source: source });
+        const vector = new ol.layer.Vector({
+            source: source,
+            style: {
+                'fill-color': 'rgba(255, 255, 255, 0.2)',
+                'stroke-color': '#01B468',
+                'stroke-width': 2,
+                'circle-radius': 7,
+                'circle-fill-color': '#01B468',
+            },
+        });
+
         const map = new ol.Map({
             target: 'map',
-            layers: [
-            ],
+            layers: [raster, vector],
             view: new ol.View({
                 center: [13434643.11663889, 2774262.446111564],
                 zoom: 12,
+                projection
             }),
         });
+        map.addInteraction(modify);
 
         var view = new ol.View({
             center: [116.20, 39.56],//地图中心位置北京
@@ -247,6 +277,15 @@
             maxZoom: 20,
             zoom: 7//地图初始层级
         })
+
+        typeSelect.onchange = function () {
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            addInteraction();
+        };
+
+        addInteraction();
+
 
         // INIT WMTS
         url = 'https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}';
@@ -289,9 +328,13 @@
         map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
 
-        const init = (layer) => {
+        const init = () => {
             layerWMTS.getSource().refresh();
             layerWMS.getSource().refresh();
+
+        }
+
+        const changeLayer = layer => {
             layerWMTS.getSource().setUrl(`https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`);
             layerWMS.getSource().updateParams({ 'LAYERS': layer });
         }
@@ -306,6 +349,15 @@
             layerWMS.setVisible(true);
         }
 
+        function addInteraction() {
+            draw = new ol.interaction.Draw({
+                source: source,
+                type: typeSelect.value,
+            });
+            map.addInteraction(draw);
+            snap = new ol.interaction.Snap({ source: source });
+            map.addInteraction(snap);
+        }
 
 
         //DataTable
@@ -337,9 +389,17 @@
             });
 
         //map listener
+        //達座標
+        source.on('addfeature', function (evt) {
+            var feature = evt.feature;
+            var coords = feature.getGeometry().getCoordinates();
+            console.log(coords)
+        });
+
         $('.dropdown-menu').on('click', 'li', function (e) {
             let layer = e.currentTarget.getAttribute('data-id');
-            init(layer);
+            init();
+            changeLayer(layer);
             $('.layerName').html(e.target.innerHTML);
             if ($(this).hasClass('selected')) {
             } else {
