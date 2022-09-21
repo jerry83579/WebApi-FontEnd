@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Api Test</title>
+    <!-- Boostrap5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <!-- Datatable Boostrap5.0 cs -->
+    <!-- <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script> -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
+
+    <!-- OpenLayers -->
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.css">
+
+    <!-- import -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container-fluid row">
+        <div class="col-6">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary my-2 " data-bs-toggle="modal"
+                data-bs-target="#addModel">新增單筆資料</button>
+            <button type="button" class="btn btn-danger removeButton mx-2" id="button" data-bs-toggle="modal"
+                data-bs-target="#removeModel" disabled>刪除單筆資料</button>
+            <button type="button" class="btn btn-warning updateButton" id="button" data-bs-toggle="modal"
+                data-bs-target="#updateModel" disabled>修改單筆資料</button>
+
+            <table id="table_id_example" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>餐廳名字</th>
+                        <th>食物</th>
+                        <th>電話</th>
+                        <th>地址</th>
+                        <th>座標</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <!-- Modal -->
+            <div class="modal fade" id="addModel" tabindex="-1" aria-labelledby="addModelLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">餐廳名字</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addName form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">食物</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addFood form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addPhone form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addAddress form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">座標</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addLocation form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="addRow">確定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="removeModel" tabindex="-1" aria-labelledby="removeModel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">刪除資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            確定刪除資料嗎
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="removeRow">確定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="updateModel" tabindex="-1" aria-labelledby="updateModel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">修改資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">餐廳名字</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateName form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">食物</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateFood form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updatePhone form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateAddress form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class=" col-form-label">座標</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateLocation form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="updateRow">確定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- map -->
+        <div id="map" class="map col-6">
+            <div class="btn">
+                <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
+                <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <!-- 下拉式選單 -->
+                <ul class="dropdown-menu">
+                    <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
+                    <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
+                    <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
+                    <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
+
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        // console.log(map.getLayers().item(0))
+        var projection = ol.proj.get("EPSG:3826");
+        var basemap = 0;
+        let layerWMTS;
+        let layerWMS;
+        let url;
+
+        // 初始化
+        const map = new ol.Map({
+            target: 'map',
+            layers: [
+            ],
+            view: new ol.View({
+                center: [13434643.11663889, 2774262.446111564],
+                zoom: 12,
+            }),
+        });
+
+        var view = new ol.View({
+            center: [116.20, 39.56],//地图中心位置北京
+            projection: projection,
+            minZoom: 4,
+            maxZoom: 20,
+            zoom: 7//地图初始层级
+        })
+
+        // INIT WMTS
+        url = 'https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}';
+        layerWMTS = new ol.layer.Tile({
+            id: 1,
+            url: url,
+            type: "wmts",
+            source: new ol.source.XYZ({
+                tileUrlFunction: function (tileCoord) {
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+                    return url.replace("{z}", z).replace("{y}", y).replace("{x}", x);
+                },
+            }),
+        });
+        layerWMTS.setZIndex(10);
+
+        //WMS
+        layerWMS = new ol.layer.Tile({
+            source:
+                new ol.source.TileWMS({
+                    url: 'https://wms.nlsc.gov.tw/wms',
+                    params: {
+                        'SERVICE': 'WMS',
+                        'VERSION': '1.1.1',
+                        'REQUEST': 'GetMap',
+                        'SRS': 'EPSG:3826',
+                        'LAYERS': 'EMAP',
+                        'FORMAT': 'image/png',
+                        'TRANSPARENT': true,
+                    },
+                    serverType: 'geoserver',
+                    key: 'WMS',
+                    visible: false
+                }),
+            key: 'sec',
+            title: "比對圖",
+        });
+        map.addLayer(layerWMS);
+        map.addLayer(layerWMTS);
+
+        const init = (layer) => {
+            layerWMTS.getSource().refresh();
+            layerWMS.getSource().refresh();
+            layerWMTS.getSource().setUrl(`https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`);
+            layerWMS.getSource().updateParams({ 'LAYERS': layer });
+        }
+
+        const switchWMTS = () => {
+            layerWMS.setVisible(false);
+            layerWMTS.setVisible(true);
+        }
+
+        const switchWMS = () => {
+            layerWMTS.setVisible(false);
+            layerWMS.setVisible(true);
+        }
+
+
+
+        //DataTable
+        let table = $('#table_id_example').DataTable();
+
+        // 獲取資料
+        fetch('https://localhost:44329/api/Restaurant/get/info', {
+            mode: 'cors',
+            headers: {
+                'content-type': 'application/json'
+            },
+            method: 'Get', // *GET, POST, PUT, DELETE, etc.
+        })
+            .then((response) => {
+                // 操作 response 屬性、方法
+                return response.json();
+            })
+            .then((data) => {
+                // 實際存取到資料
+                console.log(data)
+                data.forEach((element) => {
+                    let newTable = table.row.add([element.name, element.food, element.phone, element.address, `[${element.longitude},${element.lat}]`]).draw(false).node();
+                    $(newTable).attr('data-id', element.id);
+                });
+            })
+            .catch((error) => {
+                // 錯誤回應
+                console.log(error);
+            });
+
+        //map listener
+        $('.dropdown-menu').on('click', 'li', function (e) {
+            let layer = e.currentTarget.getAttribute('data-id');
+            init(layer);
+            $('.layerName').html(e.target.innerHTML);
+            if ($(this).hasClass('selected')) {
+            } else {
+                $('.dropdown-menu li').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+
+        // Datatable addlistener
+        //判斷選取
+        $('#table_id_example tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                $('.updateButton').attr("disabled", true);
+                $('.removeButton').attr("disabled", true);
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $('.updateButton').attr("disabled", false);
+                $('.removeButton').attr("disabled", false);
+            }
+        });
+
+        // 行新增
+        $('#addRow').on('click', function () {
+            let body = {
+                "name": $('.addName').val(),
+                "food": $('.addFood').val(),
+                "address": $('.addAddress').val(),
+                "phone": $('.addPhone').val(),
+            }
+            table.row.add([$('.addName').val(), $('.addFood').val(), $('.addPhone').val(), $('.addAddress').val(), $('.addLocation').val()]).draw(false);
+            fetch('https://localhost:44329/api/Restaurant/post/info', {
+                mode: 'cors',
+                body: JSON.stringify(body),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            }).then((response) => {
+                //成功結果處理
+            })
+                .catch((error) => {
+                    //錯誤結果處理
+                })
+            $('#addModel').modal('toggle');
+        });
+
+
+        //行刪除
+        $('#removeRow').click(function () {
+            let data = table.row('.selected').node();
+            let id = $(data).attr('data-id')
+            const body = { id: 1 };
+            fetch(`https://localhost:44329/api/Restaurant/delete/info/${id}`, {
+                mode: 'cors',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+            })
+            table.row('.selected').remove().draw(false);
+            $('#removeModel').modal('toggle');
+
+        });
+
+        //行修改
+        $('.updateButton').click(function () {
+            let data = table.row('.selected').node();
+            $('.updateName').val($(data).find('td:eq(' + 0 + ')').html())
+            $('.updateFood').val($(data).find('td:eq(' + 1 + ')').html())
+            $('.updatePhone').val($(data).find('td:eq(' + 2 + ')').html())
+            $('.updateAddress').val($(data).find('td:eq(' + 3 + ')').html())
+        });
+
+        $('#updateRow').click(function () {
+            let data = table.row('.selected').node();
+            let id = $(data).attr('data-id')
+            let body = {
+                "name": $('.updateName').val(),
+                "food": $('.updateFood').val(),
+                "address": $('.updateAddress').val(),
+                "phone": $('.updatePhone').val(),
+            }
+            fetch(`https://localhost:44329/api/Restaurant/put/info/${id}`, {
+                mode: 'cors',
+                body: JSON.stringify(body),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+
+            })
+            $(data).find('td:eq(' + 0 + ')').html($('.updateName').val())
+            $(data).find('td:eq(' + 1 + ')').html($('.updateFood').val())
+            $(data).find('td:eq(' + 2 + ')').html($('.updatePhone').val())
+            $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val())
+            $('#updateModel').modal('toggle');
+
+        });
+
+    </script>
+    <!-- Bootstrap5.0 js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-lpyLfhYuitXl2zRZ5Bn2fqnhNAKOAaM/0Kr9laMspuaMiZfGmfwRNFh8HlMy49eQ"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
