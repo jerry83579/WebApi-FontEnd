@@ -234,14 +234,14 @@
         let layerWMS;
         let url;
 
-        // const wkt =
-        //     'POINT(13430611.063396845 2773536.2943428545)';
-        // const format = new ol.format.WKT();
-        // const feature = format.readFeature(wkt, {
-        //     dataProjection: 'EPSG:3826',
-        //     featureProjection: 'EPSG:3857',
-        // });
-        // console.log(feature)
+        const wkt =
+            'POINT(13430611.063396845 2773536.2943428545)';
+        const format = new ol.format.WKT();
+        const feature = format.readFeature(wkt, {
+            dataProjection: 'EPSG:3826',
+            featureProjection: 'EPSG:3857',
+        });
+
         // 初始化
         const raster = new ol.layer.Tile({
             source: new ol.source.OSM(),
@@ -258,6 +258,8 @@
                 'circle-fill-color': '#01B468',
             },
         });
+        source.addFeature(feature);
+
 
         const map = new ol.Map({
             target: 'map',
