@@ -39,11 +39,11 @@
     <div class="container-fluid row">
         <div class="col-6">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary my-2 " data-bs-toggle="modal"
+            <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
                 data-bs-target="#addModel">新增單筆資料</button>
-            <button type="button" class="btn btn-danger removeButton mx-2" id="button" data-bs-toggle="modal"
+            <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
                 data-bs-target="#removeModel" disabled>刪除單筆資料</button>
-            <button type="button" class="btn btn-warning updateButton" id="button" data-bs-toggle="modal"
+            <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                 data-bs-target="#updateModel" disabled>修改單筆資料</button>
 
             <table id="table_id_example" class="table table-striped">
@@ -71,7 +71,7 @@
                         <div class="modal-body">
                             <div class="row align-items-center">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">餐廳名字</label>
+                                    <label for="inputPassword6" class="col-form-label">餐廳名字</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="addName form-control" aria-describedby="passwordHelpInline">
@@ -79,7 +79,7 @@
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">食物</label>
+                                    <label for="inputPassword6" class="col-form-label">食物</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="addFood form-control" aria-describedby="passwordHelpInline">
@@ -87,7 +87,7 @@
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">電話</label>
+                                    <label for="inputPassword6" class="col-form-label">電話</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="addPhone form-control" aria-describedby="passwordHelpInline">
@@ -95,7 +95,7 @@
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">地址</label>
+                                    <label for="inputPassword6" class="col-form-label">地址</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="addAddress form-control" aria-describedby="passwordHelpInline">
@@ -103,7 +103,7 @@
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">座標</label>
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="addLocation form-control" aria-describedby="passwordHelpInline">
@@ -179,7 +179,7 @@
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">座標</label>
+                                    <label for="inputPassword6" class=" col-form-label">座標 x,y</label>
                                 </div>
                                 <div class="col-7">
                                     <input class="updateLocation form-control" aria-describedby="passwordHelpInline">
@@ -196,53 +196,48 @@
             </div>
         </div>
         <!-- map -->
-        <div id="map" class="map col-6">
-            <div class="btn">
-                <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
-                <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
+        <div class="col-6 d-flex flex-column">
+            <div>
+                <div class="btn">
+                    <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
+                    <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
+                </div>
+                <!-- 切換圖層下拉式選單 -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
+                        <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
+                        <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
+                        <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
+                    </ul>
+                </div>
+                <select id="type">
+                    <option value="Point">Point</option>
+                    <option value="LineString">LineString</option>
+                    <option value="Polygon">Polygon</option>
+                    <option value="Circle">Circle</option>
+                </select>
             </div>
-
-            <!-- 切換圖層下拉式選單 -->
-            <div class="btn-group">
-                <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
-                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
-                    <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
-                    <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
-                    <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
-                </ul>
-            </div>
-            <select id="type">
-                <option value="Point">Point</option>
-                <option value="LineString">LineString</option>
-                <option value="Polygon">Polygon</option>
-                <option value="Circle">Circle</option>
-            </select>
+            <div id="map" class="map"></div>
         </div>
     </div>
 
     <script>
-        var typeSelect = document.getElementById('type');
-        var projection = ol.proj.get("EPSG:3826");
-        var basemap = 0;
-        var draw, snap;
+        var draw, snap, url;
         let layerWMTS;
         let layerWMS;
-        let url;
-
-        const wkt =
-            'POINT(13430611.063396845 2773536.2943428545)';
-        const format = new ol.format.WKT();
-        const feature = format.readFeature(wkt, {
-            dataProjection: 'EPSG:3826',
-            featureProjection: 'EPSG:3857',
-        });
+        var basemap = 0;
+        const table = $('#table_id_example').DataTable();
+        var typeSelect = document.getElementById('type');
+        var projection = ol.proj.get("EPSG:3826");
 
         // 初始化
+        const format = new ol.format.WKT();
         const raster = new ol.layer.Tile({
             source: new ol.source.OSM(),
         });
@@ -252,15 +247,12 @@
             source: source,
             style: {
                 'fill-color': 'rgba(255, 255, 255, 0.2)',
-                'stroke-color': '#01B468',
+                'stroke-color': '#4F9D9D',
                 'stroke-width': 2,
                 'circle-radius': 7,
-                'circle-fill-color': '#01B468',
+                'circle-fill-color': '#4F9D9D',
             },
         });
-        source.addFeature(feature);
-
-
         const map = new ol.Map({
             target: 'map',
             layers: [raster, vector],
@@ -270,14 +262,15 @@
                 projection
             }),
         });
+
         map.addInteraction(modify);
 
         var view = new ol.View({
-            center: [116.20, 39.56],//地图中心位置北京
+            center: [116.20, 39.56],//地圖中心位置
             projection: projection,
             minZoom: 4,
             maxZoom: 20,
-            zoom: 7//地图初始层级
+            zoom: 7//地圖初始階層
         })
 
         typeSelect.onchange = function () {
@@ -285,8 +278,6 @@
             map.removeInteraction(snap);
             addInteraction();
         };
-
-        addInteraction();
 
 
         // INIT WMTS
@@ -329,6 +320,34 @@
         });
         map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
+        // 獲取資料
+        async function dataInit() {
+            const response = await fetch('https://localhost:44329/api/Restaurant/get/info', {
+                mode: 'cors',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'Get', // *GET, POST, PUT, DELETE, etc.
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        }
+        dataInit().then(data => {
+            data.forEach(element => {
+                let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.lat},${element.longitude}`]).draw(false).node();
+                $(newTable).attr('data-id', element.id);
+                let feature = format.readFeature(`POINT(${element.lat} ${element.longitude})`, {
+                    dataProjection: 'EPSG:3826',
+                    featureProjection: 'EPSG:3857',
+                });
+                source.addFeature(feature);
+            });
+        });
+
+        addInteraction();
 
         const init = () => {
             layerWMTS.getSource().refresh();
@@ -362,36 +381,10 @@
         }
 
 
-        //DataTable
-        let table = $('#table_id_example').DataTable();
 
-        // 獲取資料
-        fetch('https://localhost:44329/api/Restaurant/get/info', {
-            mode: 'cors',
-            headers: {
-                'content-type': 'application/json'
-            },
-            method: 'Get', // *GET, POST, PUT, DELETE, etc.
-        })
-            .then((response) => {
-                // 操作 response 屬性、方法
-                return response.json();
-            })
-            .then((data) => {
-                // 實際存取到資料
-                console.log(data)
-                data.forEach((element) => {
-                    let newTable = table.row.add([element.name, element.food, element.phone, element.address, `[${element.longitude},${element.lat}]`]).draw(false).node();
-                    $(newTable).attr('data-id', element.id);
-                });
-            })
-            .catch((error) => {
-                // 錯誤回應
-                console.log(error);
-            });
 
         //map listener
-        //達座標
+        //座標
         source.on('addfeature', function (evt) {
             var feature = evt.feature;
             var coords = feature.getGeometry().getCoordinates();
@@ -428,10 +421,10 @@
         // 行新增
         $('#addRow').on('click', function () {
             let body = {
-                "name": $('.addName').val(),
-                "food": $('.addFood').val(),
-                "address": $('.addAddress').val(),
-                "phone": $('.addPhone').val(),
+                "Name": $('.addName').val(),
+                "Food": $('.addFood').val(),
+                "Address": $('.addAddress').val(),
+                "Phone": $('.addPhone').val(),
             }
             table.row.add([$('.addName').val(), $('.addFood').val(), $('.addPhone').val(), $('.addAddress').val(), $('.addLocation').val()]).draw(false);
             fetch('https://localhost:44329/api/Restaurant/post/info', {
@@ -478,13 +471,18 @@
         });
 
         $('#updateRow').click(function () {
+            let location = $(".updateLocation").val()
+            let strAry = location.split(',');
+            console.log(typeof strAry[0])
             let data = table.row('.selected').node();
             let id = $(data).attr('data-id')
             let body = {
-                "name": $('.updateName').val(),
-                "food": $('.updateFood').val(),
-                "address": $('.updateAddress').val(),
-                "phone": $('.updatePhone').val(),
+                "Name": $('.updateName').val(),
+                "Food": $('.updateFood').val(),
+                "Address": $('.updateAddress').val(),
+                "Phone": $('.updatePhone').val(),
+                "Lat": parseFloat(strAry[0]),
+                "Longitude": parseFloat(strAry[1]),
             }
             fetch(`https://localhost:44329/api/Restaurant/put/info/${id}`, {
                 mode: 'cors',
@@ -493,12 +491,12 @@
                     'content-type': 'application/json'
                 },
                 method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-
             })
             $(data).find('td:eq(' + 0 + ')').html($('.updateName').val())
             $(data).find('td:eq(' + 1 + ')').html($('.updateFood').val())
             $(data).find('td:eq(' + 2 + ')').html($('.updatePhone').val())
             $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val())
+            $(data).find('td:eq(' + 4 + ')').html($('.updateLocation').val())
             $('#updateModel').modal('toggle');
 
         });
