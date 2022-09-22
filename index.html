@@ -37,28 +37,31 @@
 
 <body>
     <div class="container-fluid row">
-        <div class="col-6">
+        <div class="col-6 d-flex flex-column">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
-                data-bs-target="#addModel">新增單筆資料</button>
-            <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
-                data-bs-target="#removeModel" disabled>刪除單筆資料</button>
-            <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
-                data-bs-target="#updateModel" disabled>修改單筆資料</button>
+            <div><button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
+                    data-bs-target="#addModel">新增單筆資料</button>
+                <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#removeModel" disabled>刪除單筆資料</button>
+                <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#updateModel" disabled>修改單筆資料</button>
+            </div>
 
-            <table id="table_id_example" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>餐廳名字</th>
-                        <th>食物</th>
-                        <th>電話</th>
-                        <th>地址</th>
-                        <th>座標</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div>
+                <table id="table_id_example" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>餐廳名字</th>
+                            <th>食物</th>
+                            <th>電話</th>
+                            <th>地址</th>
+                            <th>座標</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Modal -->
             <div class="modal fade" id="addModel" tabindex="-1" aria-labelledby="addModelLabel" aria-hidden="true">
@@ -209,19 +212,26 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Toggle Dropdown</span>
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-layer">
                         <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
                         <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
                         <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
                         <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
                     </ul>
                 </div>
-                <select id="type">
-                    <option value="Point">Point</option>
-                    <option value="LineString">LineString</option>
-                    <option value="Polygon">Polygon</option>
-                    <option value="Circle">Circle</option>
-                </select>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary defaultType">Point</button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-point">
+                        <li data-id="EMAP"><a class="dropdown-item" href="#">Point</a></li>
+                        <li data-id="CITY"><a class="dropdown-item" href="#">LineString</a></li>
+                        <li data-id="TOWN"><a class="dropdown-item" href="#">Polygon</a></li>
+                        <li data-id="PHOTO2"><a class="dropdown-item" href="#">Circle</a></li>
+                    </ul>
+                </div>
             </div>
             <div id="map" class="map"></div>
         </div>
@@ -272,13 +282,6 @@
             maxZoom: 20,
             zoom: 7//地圖初始階層
         })
-
-        typeSelect.onchange = function () {
-            map.removeInteraction(draw);
-            map.removeInteraction(snap);
-            addInteraction();
-        };
-
 
         // INIT WMTS
         url = 'https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}';
@@ -373,14 +376,12 @@
         function addInteraction() {
             draw = new ol.interaction.Draw({
                 source: source,
-                type: typeSelect.value,
+                type: $('.defaultType').html(),
             });
             map.addInteraction(draw);
             snap = new ol.interaction.Snap({ source: source });
             map.addInteraction(snap);
         }
-
-
 
 
         //map listener
@@ -391,17 +392,26 @@
             console.log(coords)
         });
 
-        $('.dropdown-menu').on('click', 'li', function (e) {
+        $('.dropdown-layer').on('click', 'li', function (e) {
             let layer = e.currentTarget.getAttribute('data-id');
             init();
             changeLayer(layer);
             $('.layerName').html(e.target.innerHTML);
             if ($(this).hasClass('selected')) {
             } else {
-                $('.dropdown-menu li').removeClass('selected');
+                $('.dropdown-layer li').removeClass('selected');
                 $(this).addClass('selected');
             }
         });
+
+        $('.dropdown-point').on('click', 'li', function (e) {
+            $('.defaultType').html(e.target.innerHTML);
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            addInteraction();
+        })
+
+
 
         // Datatable addlistener
         //判斷選取
@@ -420,11 +430,17 @@
 
         // 行新增
         $('#addRow').on('click', function () {
+            let location = $(".addLocation").val()
+            let strAry = location.split(',');
+            let Lat = parseFloat(strAry[0]);
+            let Longitude = parseFloat(strAry[1]);
             let body = {
                 "Name": $('.addName').val(),
                 "Food": $('.addFood').val(),
                 "Address": $('.addAddress').val(),
                 "Phone": $('.addPhone').val(),
+                "Lat": Lat,
+                "Longitude": Longitude
             }
             table.row.add([$('.addName').val(), $('.addFood').val(), $('.addPhone').val(), $('.addAddress').val(), $('.addLocation').val()]).draw(false);
             fetch('https://localhost:44329/api/Restaurant/post/info', {
@@ -440,6 +456,11 @@
                 .catch((error) => {
                     //錯誤結果處理
                 })
+            let feature = format.readFeature(`POINT(${Lat} ${Longitude})`, {
+                dataProjection: 'EPSG:3826',
+                featureProjection: 'EPSG:3857',
+            });
+            source.addFeature(feature);
             $('#addModel').modal('toggle');
         });
 
@@ -447,6 +468,10 @@
         //行刪除
         $('#removeRow').click(function () {
             let data = table.row('.selected').node();
+            let location = $(data).find('td:eq(' + 4 + ')').html();
+            let strAry = location.split(',');
+            let Lat = parseFloat(strAry[0]);
+            let Longitude = parseFloat(strAry[1]);
             let id = $(data).attr('data-id')
             const body = { id: 1 };
             fetch(`https://localhost:44329/api/Restaurant/delete/info/${id}`, {
@@ -458,7 +483,11 @@
             })
             table.row('.selected').remove().draw(false);
             $('#removeModel').modal('toggle');
-
+            let feature = format.readFeature(`POINT(${Lat} ${Longitude})`, {
+                dataProjection: 'EPSG:3826',
+                featureProjection: 'EPSG:3857',
+            });
+            source.removeFeature(feature)
         });
 
         //行修改
@@ -473,7 +502,6 @@
         $('#updateRow').click(function () {
             let location = $(".updateLocation").val()
             let strAry = location.split(',');
-            console.log(typeof strAry[0])
             let data = table.row('.selected').node();
             let id = $(data).attr('data-id')
             let body = {
@@ -482,7 +510,7 @@
                 "Address": $('.updateAddress').val(),
                 "Phone": $('.updatePhone').val(),
                 "Lat": parseFloat(strAry[0]),
-                "Longitude": parseFloat(strAry[1]),
+                "Longitude": parseFloat(strAry[1])
             }
             fetch(`https://localhost:44329/api/Restaurant/put/info/${id}`, {
                 mode: 'cors',
