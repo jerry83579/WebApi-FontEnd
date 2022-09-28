@@ -37,7 +37,7 @@
 
 <body>
     <div class="container-fluid row">
-        <div class="col-6 d-flex flex-column">
+        <div class="col-12 col-xl-6 d-flex flex-column">
             <!-- Button trigger modal -->
             <div><button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
                     data-bs-target="#addModel">新增單筆資料</button>
@@ -47,7 +47,7 @@
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
             </div>
 
-            <div>
+            <div class="mt-2">
                 <table id="table_id_example" class="table table-striped">
                     <thead>
                         <tr>
@@ -64,8 +64,9 @@
             </div>
 
             <!-- Modal -->
+            <!-- 新增Modal -->
             <div class="modal fade" id="addModel" tabindex="-1" aria-labelledby="addModelLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog ">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
@@ -116,7 +117,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="addRow">確定</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                id="addRow">確定</button>
                         </div>
                     </div>
                 </div>
@@ -197,16 +199,70 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 新增Point Modal -->
+            <div class="modal fade" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content pointModel">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">餐廳名字</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popName form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">食物</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popFood form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popPhone form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popAddress form-control" aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popLocation form-control"
+                                        aria-describedby="passwordHelpInline">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- map -->
-        <div class="col-6 d-flex flex-column">
-            <div>
+        <div class="col-12 col-xl-6 d-flex flex-column">
+            <div class="mb-2">
                 <div class="btn">
                     <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
                     <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
                 </div>
                 <!-- 切換圖層下拉式選單 -->
-                <div class="btn-group">
+                <div class="btn-group my-1">
                     <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -219,7 +275,7 @@
                         <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
                     </ul>
                 </div>
-                <div class="btn-group">
+                <div class="btn-group p-2">
                     <button type="button" class="btn btn-secondary defaultType">Point</button>
                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -234,14 +290,22 @@
                 </div>
             </div>
             <div id="map" class="map"></div>
+            <div id="popup" class="ol-popup">
+                <div class="ol-popup-content">
+                    <button type="button" class="btn btn-danger ol-popup-closer popup-closer">取消</button>
+                    <button type="button" class="btn btn-primary ol-popup-closer popup-sure mx-2">確定</button>
+                </div>
+                <div id="popup-content"></div>
+            </div>
         </div>
     </div>
-
     <script>
-        var draw, snap, url;
         let layerWMTS;
         let layerWMS;
+        var draw, snap, url;
         var basemap = 0;
+        const pointModel = $('.pointModel').html();
+        const container = $('#popup')[0];
         const table = $('#table_id_example').DataTable();
         var typeSelect = document.getElementById('type');
         var projection = ol.proj.get("EPSG:3826");
@@ -253,19 +317,31 @@
         });
         var source = new ol.source.Vector();
         const modify = new ol.interaction.Modify({ source: source });
+        // 向量資料
         const vector = new ol.layer.Vector({
             source: source,
             style: {
                 'fill-color': 'rgba(255, 255, 255, 0.2)',
-                'stroke-color': '#4F9D9D',
+                'stroke-color': '#0072E3',
                 'stroke-width': 2,
                 'circle-radius': 7,
-                'circle-fill-color': '#4F9D9D',
+                'circle-fill-color': '#0072E3',
             },
         });
+        // 彈出資訊
+        const overlay = new ol.Overlay({
+            element: container,
+            autoPan: {
+                animation: {
+                    duration: 250,
+                },
+            },
+        });
+
         const map = new ol.Map({
             target: 'map',
             layers: [raster, vector],
+            overlays: [overlay],
             view: new ol.View({
                 center: [13434643.11663889, 2774262.446111564],
                 zoom: 12,
@@ -323,6 +399,8 @@
         });
         map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
+
+
         // 獲取資料
         async function dataInit() {
             const response = await fetch('https://localhost:44329/api/Restaurant/get/info', {
@@ -330,12 +408,13 @@
                 headers: {
                     'content-type': 'application/json'
                 },
-                method: 'Get', // *GET, POST, PUT, DELETE, etc.
+                method: 'Get',
             })
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            console.log(data)
             return data;
         }
         dataInit().then(data => {
@@ -383,14 +462,77 @@
             map.addInteraction(snap);
         }
 
-
         //map listener
         //座標
         source.on('addfeature', function (evt) {
             var feature = evt.feature;
             var coords = feature.getGeometry().getCoordinates();
-            console.log(coords)
         });
+
+
+
+        // 產生popup圖層
+        map.on('singleclick', function (evt) {
+            let i = 0;
+            const coordinate = evt.coordinate;
+            var features = source.getFeatures();
+            // 判斷點擊位置是否已經有 Point
+            //0928
+            // features.forEach((element) => {
+            //     if (element.et.target.flatCoordinates[0] == coordinate[0] && element.et.target.flatCoordinates[1] == coordinate[1]) {
+            //         console.log("element.et.target.flatCoordinates[0]", element.et.target.flatCoordinates[0])
+            //         console.log("element.et.target.flatCoordinates[0]", element.et.target.flatCoordinates[1])
+            //     }
+            //     i++;
+            // });
+            $('#popup-content').html(pointModel);
+            $("#popup-content .popLocation").val(`${coordinate[0]}, ${coordinate[1]}`);
+            overlay.setPosition(coordinate);
+        });
+
+        // 取消popup圖層及取消Point
+        $('.popup-closer').on('click', function (e) {
+            var features = source.getFeatures();
+            var lastFeature = features[features.length - 1];
+            source.removeFeature(lastFeature);
+            overlay.setPosition(undefined);
+            return false;
+        })
+
+        // 確定popup圖層及新增Point
+        $('.popup-sure').on('click', function () {
+            let location = $("#popup-content .popLocation").val();
+            let name = $("#popup-content .popName").val();
+            let food = $("#popup-content .popFood").val();
+            let phone = $("#popup-content .popPhone").val();
+            let address = $("#popup-content .popAddress").val();
+            //切割 Location 取 Lat、Longitude
+            let strAry = location.split(',');
+            let Lat = parseFloat(strAry[0]);
+            let Longitude = parseFloat(strAry[1]);
+            const body = {
+                "name": name,
+                "food": food,
+                "address": address,
+                "phone": phone,
+                "lat": Lat,
+                "longitude": Longitude
+            }
+            table.row.add([name, food, phone, address, location]).draw(false);
+            fetch('https://localhost:44329/api/Restaurant/post/info', {
+                mode: 'cors',
+                body: JSON.stringify(body),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'POST',
+            }).then((response) => {
+            })
+                .catch((error) => {
+                })
+            overlay.setPosition(undefined);
+            return false;
+        })
 
         $('.dropdown-layer').on('click', 'li', function (e) {
             let layer = e.currentTarget.getAttribute('data-id');
@@ -411,8 +553,6 @@
             addInteraction();
         })
 
-
-
         // Datatable addlistener
         //判斷選取
         $('#table_id_example tbody').on('click', 'tr', function () {
@@ -430,17 +570,17 @@
 
         // 行新增
         $('#addRow').on('click', function () {
-            let location = $(".addLocation").val()
+            let location = $(".addLocation").val();
             let strAry = location.split(',');
             let Lat = parseFloat(strAry[0]);
             let Longitude = parseFloat(strAry[1]);
             let body = {
-                "Name": $('.addName').val(),
-                "Food": $('.addFood').val(),
-                "Address": $('.addAddress').val(),
-                "Phone": $('.addPhone').val(),
-                "Lat": Lat,
-                "Longitude": Longitude
+                "name": $('.addName').val(),
+                "food": $('.addFood').val(),
+                "address": $('.addAddress').val(),
+                "phone": $('.addPhone').val(),
+                "lat": Lat,
+                "longitude": Longitude
             }
             table.row.add([$('.addName').val(), $('.addFood').val(), $('.addPhone').val(), $('.addAddress').val(), $('.addLocation').val()]).draw(false);
             fetch('https://localhost:44329/api/Restaurant/post/info', {
@@ -449,13 +589,13 @@
                 headers: {
                     'content-type': 'application/json'
                 },
-                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                method: 'POST',
             }).then((response) => {
-                //成功結果處理
             })
                 .catch((error) => {
-                    //錯誤結果處理
                 })
+
+            // 新增 Point
             let feature = format.readFeature(`POINT(${Lat} ${Longitude})`, {
                 dataProjection: 'EPSG:3826',
                 featureProjection: 'EPSG:3857',
@@ -467,50 +607,56 @@
 
         //行刪除
         $('#removeRow').click(function () {
+            var i = 0;
             let data = table.row('.selected').node();
             let location = $(data).find('td:eq(' + 4 + ')').html();
             let strAry = location.split(',');
             let Lat = parseFloat(strAry[0]);
             let Longitude = parseFloat(strAry[1]);
             let id = $(data).attr('data-id')
-            const body = { id: 1 };
             fetch(`https://localhost:44329/api/Restaurant/delete/info/${id}`, {
                 mode: 'cors',
                 headers: {
                     'content-type': 'application/json'
                 },
-                method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+                method: 'DELETE',
             })
             table.row('.selected').remove().draw(false);
             $('#removeModel').modal('toggle');
-            let feature = format.readFeature(`POINT(${Lat} ${Longitude})`, {
-                dataProjection: 'EPSG:3826',
-                featureProjection: 'EPSG:3857',
+            var features = source.getFeatures();
+            //找到選擇的欄位的 Point 刪除
+            features.forEach((element) => {
+                if (element.et.target.flatCoordinates[0] == Lat && element.et.target.flatCoordinates[1] == Longitude) {
+                    source.removeFeature(features[i]);
+                }
+                i++;
             });
-            source.removeFeature(feature)
         });
 
         //行修改
         $('.updateButton').click(function () {
             let data = table.row('.selected').node();
-            $('.updateName').val($(data).find('td:eq(' + 0 + ')').html())
-            $('.updateFood').val($(data).find('td:eq(' + 1 + ')').html())
-            $('.updatePhone').val($(data).find('td:eq(' + 2 + ')').html())
-            $('.updateAddress').val($(data).find('td:eq(' + 3 + ')').html())
+            $('.updateName').val($(data).find('td:eq(' + 0 + ')').html());
+            $('.updateFood').val($(data).find('td:eq(' + 1 + ')').html());
+            $('.updatePhone').val($(data).find('td:eq(' + 2 + ')').html());
+            $('.updateAddress').val($(data).find('td:eq(' + 3 + ')').html());
+            $('.updateLocation').val($(data).find('td:eq(' + 4 + ')').html());
         });
 
         $('#updateRow').click(function () {
-            let location = $(".updateLocation").val()
-            let strAry = location.split(',');
+            let i = 0;
             let data = table.row('.selected').node();
-            let id = $(data).attr('data-id')
+            let beforeAry = $(data).find('td:eq(' + 4 + ')').html().split(',');
+            let location = $(".updateLocation").val();
+            let afterAry = location.split(',');
+            let id = $(data).attr('data-id');
             let body = {
-                "Name": $('.updateName').val(),
-                "Food": $('.updateFood').val(),
-                "Address": $('.updateAddress').val(),
-                "Phone": $('.updatePhone').val(),
-                "Lat": parseFloat(strAry[0]),
-                "Longitude": parseFloat(strAry[1])
+                "name": $('.updateName').val(),
+                "food": $('.updateFood').val(),
+                "address": $('.updateAddress').val(),
+                "phone": $('.updatePhone').val(),
+                "lat": parseFloat(afterAry[0]),
+                "longitude": parseFloat(afterAry[1])
             }
             fetch(`https://localhost:44329/api/Restaurant/put/info/${id}`, {
                 mode: 'cors',
@@ -518,13 +664,27 @@
                 headers: {
                     'content-type': 'application/json'
                 },
-                method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+                method: 'PUT',
             })
             $(data).find('td:eq(' + 0 + ')').html($('.updateName').val())
             $(data).find('td:eq(' + 1 + ')').html($('.updateFood').val())
             $(data).find('td:eq(' + 2 + ')').html($('.updatePhone').val())
             $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val())
             $(data).find('td:eq(' + 4 + ')').html($('.updateLocation').val())
+            // 修改 Point (先刪除後新增)
+            let features = source.getFeatures();
+            features.forEach((element) => {
+                if (element.et.target.flatCoordinates[0] == beforeAry[0] && element.et.target.flatCoordinates[1] == beforeAry[1]) {
+                    source.removeFeature(features[i]);
+                }
+                i++;
+            });
+
+            let feature = format.readFeature(`POINT(${afterAry[0]} ${afterAry[1]})`, {
+                dataProjection: 'EPSG:3826',
+                featureProjection: 'EPSG:3857',
+            });
+            source.addFeature(feature);
             $('#updateModel').modal('toggle');
 
         });
