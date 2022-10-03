@@ -354,20 +354,22 @@
         var layerWMS;
         var draw, snap, url;
         var basemap = 0;
-        var features = 0;
+        var features;
+        const styleCache = {};
         const container = $('#popup')[0];
         const pointAddModel = $('.pointAddModel').html();
         const pointInfoModel = $('.pointInfoModel').html();
         const table = $('#table_id_example').DataTable();
 
-        // 初始化
         const format = new ol.format.WKT();
-        const vector = new ol.source.Vector();
         const projection = ol.proj.get("EPSG:3826");
+        const vector = new ol.source.Vector();
+        const vSource = new ol.source.Vector();
 
+        // 初始化中心位置
         const view = new ol.View({
             center: [13434643.11663889, 2774262.446111564],
-            zoom: 12,
+            zoom: 8,
             projection
         });
 
@@ -381,14 +383,40 @@
             },
         });
 
-        //叢集
-        const vSource = new ol.layer.Vector({
-            features: features,
+        // 叢集
+        const clusterSource = new ol.source.Cluster({
+            distance: 10,
+            minDistance: 2,
+            source: vSource
         });
 
-        const clusterSource = new ol.source.Cluster({
-            distance: 20,
-            source: vSource
+        const clusters = new ol.layer.Vector({
+            source: clusterSource,
+            style: function (feature) {
+                const size = feature.get('features').length;
+                let style = styleCache[size];
+                if (!style) {
+                    style = new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 10,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff',
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#33ccb3',
+                            }),
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff',
+                            }),
+                        }),
+                    });
+                    styleCache[size] = style;
+                }
+                return style;
+            },
         });
 
         // 地圖
@@ -397,6 +425,7 @@
             layers: [new ol.layer.Tile({
                 source: new ol.source.OSM()
             }),
+                clusters,
             new ol.layer.Vector({
                 source: vector,
                 style: {
@@ -435,7 +464,6 @@
                 serverType: 'geoserver',
             }),
         });
-
         map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
         dataInit();
@@ -454,7 +482,6 @@
                 })
                 const data = await response.json();
                 data.forEach(element => {
-                    console.log(element)
                     let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.lat},${element.longitude}`]).draw(false).node();
                     $(newTable).attr('data-id', element.id);
                     var data = new ol.Feature({
@@ -465,8 +492,10 @@
                         address: element.address,
                         geometry: format.readGeometry(`Point(${element.lat} ${element.longitude})`),
                     })
-                    vector.addFeature(data);
+                    // vector.addFeature(data);
+                    vSource.addFeature(data);
                 });
+                console.log(vSource.getFeatures())
             }
             catch (error) {
                 console.log(`Error: ${error}`);
@@ -520,7 +549,7 @@
             if ($(".pointInfo").hasClass('selected')) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     if (feature) {
-                        const features = vector.getFeatures();
+                        const features = vSource.getFeatures();
                         const coordinate = evt.coordinate;
                         $(".popup-sure").hide();
                         $(".popup-closer").hide();
@@ -536,7 +565,7 @@
                 });
             }
             else {
-                const features = vector.getFeatures();
+                const features = vSource.getFeatures();
                 const coordinate = evt.coordinate;
                 map.getTargetElement().style.pointerEvents = 'none';
                 $(".popup-sure").show();
@@ -556,11 +585,6 @@
         })
 
         // 座標
-        vector.on('addfeature', function (evt) {
-            var feature = evt.feature;
-            var coords = feature.getGeometry().getCoordinates();
-        });
-
         // 確定popup圖層及新增Point
         $('.popup-sure').on('click', function () {
             map.getTargetElement().style.pointerEvents = 'auto';
