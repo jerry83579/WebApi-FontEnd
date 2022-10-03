@@ -318,14 +318,14 @@
                 </div>
                 <!-- 切換圖層下拉式選單 -->
                 <div class="btn-group my-1">
-                    <button type="button" class="btn btn-secondary layerName">臺灣通用電子地圖</button>
+                    <button type="button" class="btn btn-secondary layerName">縣市界</button>
                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu dropdown-layer">
-                        <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
                         <li data-id="CITY"><a class="dropdown-item" href="#">縣市界</a></li>
+                        <li data-id="EMAP"><a class="dropdown-item" href="#">臺灣通用電子地圖</a></li>
                         <li data-id="TOWN"><a class="dropdown-item" href="#">鄉鎮區界</a></li>
                         <li data-id="PHOTO2"><a class="dropdown-item" href="#"> 正射影像圖</a></li>
                     </ul>
@@ -334,44 +334,43 @@
                 <button type="button" class="btn btn-warning pointInfo">查看信息</button>
             </div>
             <div id="map" class="map"></div>
+            <label>
+                Layer opacity
+                <input id="opacity-input" type="range" min="0" max="1" step="0.01" value="1" />
+                <span id="opacity-output"></span>
+            </label>
             <div id="popup" class="ol-popup">
                 <div class="ol-popup-content">
-                    <button type="button" class="btn btn-danger ol-popup-closer popup-closer">取消</button>
-                    <button type="button" class="btn btn-primary ol-popup-closer popup-sure mx-2">確定</button>
+                    <button type="button" class="btn btn-danger popup-closer">取消</button>
+                    <button type="button" class="btn btn-primary popup-sure mx-2">確定</button>
+                    <button type="button" class="btn btn-primary popup-sure-info mx-2">確定</button>
                 </div>
                 <div id="popup-content"></div>
             </div>
         </div>
     </div>
     <script>
-        let layerWMTS;
-        let layerWMS;
+        var layerWMTS;
+        var layerWMS;
         var draw, snap, url;
         var basemap = 0;
+        var features = 0;
+        const container = $('#popup')[0];
         const pointAddModel = $('.pointAddModel').html();
         const pointInfoModel = $('.pointInfoModel').html();
-        const container = $('#popup')[0];
         const table = $('#table_id_example').DataTable();
-        var projection = ol.proj.get("EPSG:3826");
 
         // 初始化
         const format = new ol.format.WKT();
-        const raster = new ol.layer.Tile({
-            source: new ol.source.OSM(),
+        const vector = new ol.source.Vector();
+        const projection = ol.proj.get("EPSG:3826");
+
+        const view = new ol.View({
+            center: [13434643.11663889, 2774262.446111564],
+            zoom: 12,
+            projection
         });
-        var source = new ol.source.Vector();
-        // const modify = new ol.interaction.Modify({ source: source });
-        // 向量資料
-        const vector = new ol.layer.Vector({
-            source: source,
-            style: {
-                'fill-color': 'rgba(255, 255, 255, 0.2)',
-                'stroke-color': '#0072E3',
-                'stroke-width': 2,
-                'circle-radius': 7,
-                'circle-fill-color': '#0072E3',
-            },
-        });
+
         // 彈出資訊
         const overlay = new ol.Overlay({
             element: container,
@@ -381,70 +380,64 @@
                 },
             },
         });
+
+        //叢集
+        const vSource = new ol.layer.Vector({
+            features: features,
+        });
+
+        const clusterSource = new ol.source.Cluster({
+            distance: 20,
+            source: vSource
+        });
+
         // 地圖
         const map = new ol.Map({
             target: 'map',
-            layers: [raster, vector],
-            overlays: [overlay],
-            view: new ol.View({
-                center: [13434643.11663889, 2774262.446111564],
-                zoom: 12,
-                projection
+            layers: [new ol.layer.Tile({
+                source: new ol.source.OSM()
             }),
+            new ol.layer.Vector({
+                source: vector,
+                style: {
+                    'fill-color': 'rgba(255, 255, 255, 0.2)',
+                    'stroke-color': '#0072E3',
+                    'stroke-width': 2,
+                    'circle-radius': 7,
+                    'circle-fill-color': '#0072E3',
+                },
+            })],
+            overlays: [overlay],
+            view: view
         });
 
-        const view = new ol.View({
-            center: [116.20, 39.56],//地圖中心位置
-            projection: projection,
-            minZoom: 4,
-            maxZoom: 20,
-            zoom: 7//地圖初始階層
-        });
-        // map.addInteraction(modify);
-
-
-
-        // INIT WMTS
-        url = 'https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}';
+        // WMTS
         layerWMTS = new ol.layer.Tile({
-            id: 1,
-            url: url,
-            type: "wmts",
             source: new ol.source.XYZ({
+                url: 'https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}',
                 tileUrlFunction: function (tileCoord) {
                     var z = tileCoord[0];
                     var x = tileCoord[1];
                     var y = tileCoord[2];
-                    return url.replace("{z}", z).replace("{y}", y).replace("{x}", x);
+                    return 'https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}'.replace("{z}", z).replace("{y}", y).replace("{x}", x);
                 },
             }),
         });
-        layerWMTS.setZIndex(10);
 
-        //WMS
+        // WMS
         layerWMS = new ol.layer.Tile({
-            source:
-                new ol.source.TileWMS({
-                    url: 'https://wms.nlsc.gov.tw/wms',
-                    params: {
-                        'SERVICE': 'WMS',
-                        'VERSION': '1.1.1',
-                        'REQUEST': 'GetMap',
-                        'SRS': 'EPSG:3826',
-                        'LAYERS': 'EMAP',
-                        'FORMAT': 'image/png',
-                        'TRANSPARENT': true,
-                    },
-                    serverType: 'geoserver',
-                    key: 'WMS',
-                    visible: false
-                }),
-            key: 'sec',
-            title: "比對圖",
+            source: new ol.source.TileWMS({
+                url: 'https://wms.nlsc.gov.tw/wms',
+                params: {
+                    'LAYERS': 'PHOTO2',
+                    'TILED': true,
+                },
+                serverType: 'geoserver',
+            }),
         });
+
         map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
-
         dataInit();
         addInteraction();
 
@@ -461,13 +454,18 @@
                 })
                 const data = await response.json();
                 data.forEach(element => {
+                    console.log(element)
                     let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.lat},${element.longitude}`]).draw(false).node();
                     $(newTable).attr('data-id', element.id);
-                    let feature = format.readFeature(`POINT(${element.lat} ${element.longitude})`, {
-                        dataProjection: 'EPSG:3826',
-                        featureProjection: 'EPSG:3857',
-                    });
-                    source.addFeature(feature);
+                    var data = new ol.Feature({
+                        id: element.id,
+                        name: element.name,
+                        food: element.food,
+                        phone: element.phone,
+                        address: element.address,
+                        geometry: format.readGeometry(`Point(${element.lat} ${element.longitude})`),
+                    })
+                    vector.addFeature(data);
                 });
             }
             catch (error) {
@@ -476,8 +474,10 @@
         }
 
         const init = () => {
-            layerWMTS.getSource().refresh();
+            console.log("layerWMTS", layerWMTS.getSource())
+            console.log("layerWMS", layerWMS.getSource())
             layerWMS.getSource().refresh();
+            layerWMTS.getSource().refresh();
         }
 
         const changeLayer = layer => {
@@ -495,28 +495,53 @@
             layerWMS.setVisible(true);
         }
 
+        const update = () => {
+            const opacity = parseFloat($("#opacity-input").val());
+            layerWMTS.setOpacity(opacity);
+            $("#opacity-output").val(opacity.toFixed(2));
+        }
+
         function addInteraction() {
             draw = new ol.interaction.Draw({
-                source: source,
+                source: vector,
                 type: $('.defaultType').html(),
             });
             // 取消popup圖層及取消Point
             map.addInteraction(draw);
-            snap = new ol.interaction.Snap({ source: source });
+            snap = new ol.interaction.Snap({ source: vector });
             map.addInteraction(snap)
-
         }
+
 
         // map listener
 
         // 產生popup圖層
         map.on('singleclick', function (evt) {
             if ($(".pointInfo").hasClass('selected')) {
+                map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+                    if (feature) {
+                        const features = vector.getFeatures();
+                        const coordinate = evt.coordinate;
+                        $(".popup-sure").hide();
+                        $(".popup-closer").hide();
+                        $(".popup-sure-info").show();
+                        $('#popup-content').html(pointInfoModel);
+                        $('#popup-content .popName').val(feature.get('name'));
+                        $('#popup-content .popFood').val(feature.get('food'));
+                        $('#popup-content .popPhone').val(feature.get('phone'));
+                        $('#popup-content .popAddress').val(feature.get('address'));
+                        $('#popup-content .popLocation').val(feature.get('geometry').flatCoordinates);
+                        overlay.setPosition(coordinate);
+                    }
+                });
             }
             else {
-                map.getTargetElement().style.pointerEvents = 'none';
-                var features = source.getFeatures();
+                const features = vector.getFeatures();
                 const coordinate = evt.coordinate;
+                map.getTargetElement().style.pointerEvents = 'none';
+                $(".popup-sure").show();
+                $(".popup-closer").show();
+                $(".popup-sure-info").hide();
                 $('#popup-content').html(pointAddModel);
                 $("#popup-content .popLocation").val(`${coordinate[0]}, ${coordinate[1]}`);
                 overlay.setPosition(coordinate);
@@ -524,34 +549,17 @@
         });
 
         $(".pointInfo").on('click', function () {
+            $('#pointInfo').modal('toggle');
+            $(".pointInfo").addClass("selected");
             map.removeInteraction(draw);
             map.removeInteraction(snap);
         })
 
         // 座標
-        source.on('addfeature', function (evt) {
+        vector.on('addfeature', function (evt) {
             var feature = evt.feature;
             var coords = feature.getGeometry().getCoordinates();
         });
-
-        // 判斷已有 Point
-        map.on('pointermove', function (evt) {
-            const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-                // for (var key in feature.getProperties()) {
-                //     console.log(key.length);
-                //     // if (key == 'geometry') {
-                //     //     console.log("a")
-                //     //     map.getTargetElement().style.cursor = "default"
-                //     // }
-                //     // else {
-                //     //     map.getTargetElement().style.cursor = "pointer"
-
-                //     // }
-
-                // }
-            });
-        });
-
 
         // 確定popup圖層及新增Point
         $('.popup-sure').on('click', function () {
@@ -581,23 +589,27 @@
                 },
                 method: 'POST',
             }).then((response) => {
+                vector.clear();
                 dataInit();
             })
                 .catch((error) => {
                 })
             overlay.setPosition(undefined);
-            return false;
         })
 
         // 取消popup圖層及Point
         $('.popup-closer').on('click', function (e) {
             map.getTargetElement().style.pointerEvents = 'auto';
-            var features = source.getFeatures();
+            var features = vector.getFeatures();
             var lastFeature = features[features.length - 1];
-            source.removeFeature(lastFeature);
+            vector.removeFeature(lastFeature);
             overlay.setPosition(undefined);
             $('.popup-closer').blur();
             return false;
+        })
+
+        $(".popup-sure-info").on('click', function () {
+            overlay.setPosition(undefined);
         })
 
         $('.dropdown-layer').on('click', 'li', function (e) {
@@ -613,20 +625,28 @@
         });
 
         $('.defaultType').on('click', function (e) {
+            $(".pointInfo").removeClass("selected");
             $('.defaultType').html(e.target.innerHTML);
             map.removeInteraction(draw);
             map.removeInteraction(snap);
             addInteraction();
         })
 
+        $("#opacity-input").on('input', update);
         // Datatable addlistener
         //判斷選取
-        $('#table_id_example tbody').on('click', 'tr', function () {
+        $('#table_id_example tbody').on('click', 'tr', function (e) {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 $('.updateButton').attr("disabled", true);
                 $('.removeButton').attr("disabled", true);
             } else {
+                let locationArr = $(e.currentTarget).find('td:eq(' + 4 + ')').html();
+                let location = locationArr.split(",");
+                view.animate({
+                    center: [parseFloat(location[0]), parseFloat(location[1])],
+                    duration: 2000,
+                });
                 table.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 $('.updateButton').attr("disabled", false);
@@ -666,7 +686,7 @@
                 dataProjection: 'EPSG:3826',
                 featureProjection: 'EPSG:3857',
             });
-            source.addFeature(feature);
+            vector.addFeature(feature);
             $('#addModel').modal('toggle');
         });
 
@@ -679,7 +699,7 @@
             let strAry = location.split(',');
             let Lat = parseFloat(strAry[0]);
             let Longitude = parseFloat(strAry[1]);
-            let id = $(data).attr('data-id')
+            let id = $(data).attr('data-id');
             fetch(`https://localhost:44329/api/Restaurant/delete/info/${id}`, {
                 mode: 'cors',
                 headers: {
@@ -689,11 +709,11 @@
             })
             table.row('.selected').remove().draw(false);
             $('#removeModel').modal('toggle');
-            var features = source.getFeatures();
+            var features = vector.getFeatures();
             //找到選擇的欄位的 Point 刪除
             features.forEach((element) => {
                 if (element.et.target.flatCoordinates[0] == Lat && element.et.target.flatCoordinates[1] == Longitude) {
-                    source.removeFeature(features[i]);
+                    vector.removeFeature(features[i]);
                 }
                 i++;
             });
@@ -732,16 +752,16 @@
                 },
                 method: 'PUT',
             })
-            $(data).find('td:eq(' + 0 + ')').html($('.updateName').val())
-            $(data).find('td:eq(' + 1 + ')').html($('.updateFood').val())
-            $(data).find('td:eq(' + 2 + ')').html($('.updatePhone').val())
-            $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val())
-            $(data).find('td:eq(' + 4 + ')').html($('.updateLocation').val())
+            $(data).find('td:eq(' + 0 + ')').html($('.updateName').val());
+            $(data).find('td:eq(' + 1 + ')').html($('.updateFood').val());
+            $(data).find('td:eq(' + 2 + ')').html($('.updatePhone').val());
+            $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val());
+            $(data).find('td:eq(' + 4 + ')').html($('.updateLocation').val());
             // 修改 Point (先刪除後新增)
-            let features = source.getFeatures();
+            let features = vector.getFeatures();
             features.forEach((element) => {
                 if (element.et.target.flatCoordinates[0] == beforeAry[0] && element.et.target.flatCoordinates[1] == beforeAry[1]) {
-                    source.removeFeature(features[i]);
+                    vector.removeFeature(features[i]);
                 }
                 i++;
             });
@@ -750,7 +770,7 @@
                 dataProjection: 'EPSG:3826',
                 featureProjection: 'EPSG:3857',
             });
-            source.addFeature(feature);
+            vector.addFeature(feature);
             $('#updateModel').modal('toggle');
         });
 
