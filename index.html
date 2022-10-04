@@ -314,7 +314,7 @@
             <div class="mb-2">
                 <div class="btn">
                     <button class="btn btn-success" data-id="WMTS" onclick="switchWMTS()">WMTS</button>
-                    <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button>
+                    <!-- <button class="btn btn-success" data-id="WMS" onclick="switchWMS()">WMS</button> -->
                 </div>
                 <!-- 切換圖層下拉式選單 -->
                 <div class="btn-group my-1">
@@ -351,7 +351,7 @@
     </div>
     <script>
         var layerWMTS;
-        var layerWMS;
+        // var layerWMS;
         var draw, snap, url;
         var basemap = 0;
         var features;
@@ -389,11 +389,27 @@
             minDistance: 20,
             source: vSource
         });
-
         const clusters = new ol.layer.Vector({
             source: clusterSource,
             style: function (feature) {
                 const size = feature.get('features').length;
+                console.log(feature.get('features'))
+                let color = '#33ccb3'
+                // console.log(feature.C.features[0].C.geometry.flatCoordinates)
+                if (size == 1) {
+                    // let data = new ol.Feature({
+                    //     id: feature.C.features[0].get('id'),
+                    //     name: feature.C.features[0].get('name'),
+                    //     food: feature.C.features[0].get('food'),
+                    //     phone: feature.C.features[0].get('phone'),
+                    //     address: feature.C.features[0].get('address'),
+                    //     geometry: new ol.geom.Point(`${feature.C.features[0].C.geometry.flatCoordinates[0]} ${feature.C.features[0].C.geometry.flatCoordinates[1]}`)
+                    // })
+                    // vector.addFeature(data)
+                    // console.log(vector.getFeatures())
+                    color = '#D94600'
+                    // vSource.removeFeature(feature.C.features[0])
+                }
                 let style = styleCache[size];
                 if (!style) {
                     style = new ol.style.Style({
@@ -403,7 +419,7 @@
                                 color: '#fff',
                             }),
                             fill: new ol.style.Fill({
-                                color: '#33ccb3',
+                                color: color,
                             }),
                         }),
                         text: new ol.style.Text({
@@ -454,17 +470,17 @@
         });
 
         // WMS
-        layerWMS = new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'https://wms.nlsc.gov.tw/wms',
-                params: {
-                    'LAYERS': 'PHOTO2',
-                    'TILED': true,
-                },
-                serverType: 'geoserver',
-            }),
-        });
-        map.addLayer(layerWMS);
+        // layerWMS = new ol.layer.Tile({
+        //     source: new ol.source.TileWMS({
+        //         url: 'https://wms.nlsc.gov.tw/wms',
+        //         params: {
+        //             'LAYERS': 'PHOTO2',
+        //             'TILED': true,
+        //         },
+        //         serverType: 'geoserver',
+        //     }),
+        // });
+        // map.addLayer(layerWMS);
         map.addLayer(layerWMTS);
         dataInit();
         addInteraction();
@@ -490,9 +506,10 @@
                         food: element.food,
                         phone: element.phone,
                         address: element.address,
-                        geometry: format.readGeometry(`Point(${element.lat} ${element.longitude})`),
+                        geometry: new ol.geom.Point(ol.proj.transform([element.lat, element.longitude], 'EPSG:4326', 'EPSG:3857'))
                     })
                     vSource.addFeature(data);
+                    // vector.addFeature(data);
                 });
             }
             catch (error) {
@@ -501,23 +518,23 @@
         }
 
         const init = () => {
-            layerWMS.getSource().refresh();
+            // layerWMS.getSource().refresh();
             layerWMTS.getSource().refresh();
         }
 
         const changeLayer = layer => {
             layerWMTS.getSource().setUrl(`https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`);
-            layerWMS.getSource().updateParams({ 'LAYERS': layer });
+            // layerWMS.getSource().updateParams({ 'LAYERS': layer });
         }
 
         const switchWMTS = () => {
-            layerWMS.setVisible(false);
+            // layerWMS.setVisible(false);
             layerWMTS.setVisible(true);
         }
 
         const switchWMS = () => {
             layerWMTS.setVisible(false);
-            layerWMS.setVisible(true);
+            // layerWMS.setVisible(true);
         }
 
         const update = () => {
@@ -533,7 +550,7 @@
             });
             // 取消popup圖層及取消Point
             map.addInteraction(draw);
-            snap = new ol.interaction.Snap({ source: vector });
+            snap = new ol.interaction.Snap({ source: vSource });
             map.addInteraction(snap);
         }
 
@@ -547,6 +564,7 @@
                     // 查看信息
                     if (feature && feature.C.features.length == 1) {
                         const coordinate = evt.coordinate;
+                        let lonLat = ol.proj.toLonLat(coordinate)
                         $(".popup-sure").hide();
                         $(".popup-closer").hide();
                         $(".popup-sure-info").show();
@@ -555,7 +573,7 @@
                         $('#popup-content .popFood').val(feature.C.features[0].get('food'));
                         $('#popup-content .popPhone').val(feature.C.features[0].get('phone'));
                         $('#popup-content .popAddress').val(feature.C.features[0].get('address'));
-                        $('#popup-content .popLocation').val(feature.get('geometry').flatCoordinates);
+                        $('#popup-content .popLocation').val(lonLat);
                         overlay.setPosition(coordinate);
                     }
                 });
@@ -563,12 +581,13 @@
             else {
                 const features = vSource.getFeatures();
                 const coordinate = evt.coordinate;
+                let lonLat = ol.proj.toLonLat(coordinate)
                 map.getTargetElement().style.pointerEvents = 'none';
                 $(".popup-sure").show();
                 $(".popup-closer").show();
                 $(".popup-sure-info").hide();
                 $('#popup-content').html(pointAddModel);
-                $("#popup-content .popLocation").val(`${coordinate[0]}, ${coordinate[1]}`);
+                $("#popup-content .popLocation").val(lonLat);
                 overlay.setPosition(coordinate);
             }
         });
@@ -656,18 +675,37 @@
         $("#opacity-input").on('input', update);
         // Datatable addlistener
         //判斷選取
-        $('#table_id_example tbody').on('click', 'tr', function (e) {
+
+        //1004
+        $('#table_id_example tbody').on('click', 'tr', async function (e) {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 $('.updateButton').attr("disabled", true);
                 $('.removeButton').attr("disabled", true);
             } else {
-                let locationArr = $(e.currentTarget).find('td:eq(' + 4 + ')').html();
-                let location = locationArr.split(",");
-                view.animate({
-                    center: [parseFloat(location[0]), parseFloat(location[1])],
+                let geometryArr = $(e.currentTarget).find('td:eq(' + 4 + ')').html();
+                let geometry = geometryArr.split(",");
+                let location = ol.proj.fromLonLat([parseFloat(geometry[0]), parseFloat(geometry[1])])
+                await view.animate({
+                    center: [location[0], location[1]],
                     duration: 2000,
+                    zoom: 14
                 });
+                console.log("D")
+                // 定位 & 改變定位座標樣式
+                // let features = vSource.getFeatures();
+                // let feature = features.filter(element => element.get("id") == e.currentTarget.getAttribute("data-id"));
+                // var style = new ol.style.Style({
+                //     image: new ol.style.Circle({ // add this
+                //         stroke: new ol.style.Stroke({
+                //             color: 'red'
+                //         }),
+                //         radius: 5
+                //     }),
+                // });
+                // // console.log(feature[0].getStyle())
+                // feature[0].setStyle(style);
+                // vSource.removeFeature(feature[0]);
                 table.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 $('.updateButton').attr("disabled", false);
@@ -697,19 +735,18 @@
                 },
                 method: 'POST',
             }).then((response) => {
-                dataInit();
                 vSource.clear();
                 vector.clear();
+                dataInit();
             })
                 .catch((error) => {
                 })
 
-            // 新增 Point
-            let feature = format.readFeature(`POINT(${Lat} ${Longitude})`, {
-                dataProjection: 'EPSG:3826',
-                featureProjection: 'EPSG:3857',
-            });
-            vSource.addFeature(feature);
+            $('.addName').val("");
+            $('.addFood').val("");
+            $('.addAddress').val("");
+            $('.addPhone').val("");
+            $(".addLocation").val("");
             $('#addModel').modal('toggle');
         });
 
@@ -735,7 +772,8 @@
             var features = vSource.getFeatures();
             //找到選擇的欄位的 Point 刪除
             features.forEach((element) => {
-                if (element.et.target.flatCoordinates[0] == Lat && element.et.target.flatCoordinates[1] == Longitude) {
+                let location = ol.proj.toLonLat(element.et.target.flatCoordinates);
+                if (location[0] == Lat && location[1] == Longitude) {
                     vSource.removeFeature(features[i]);
                 }
                 i++;
@@ -783,16 +821,14 @@
             // 修改 Point (先刪除後新增)
             let features = vSource.getFeatures();
             features.forEach((element) => {
-                if (element.et.target.flatCoordinates[0] == beforeAry[0] && element.et.target.flatCoordinates[1] == beforeAry[1]) {
+                let location = ol.proj.toLonLat(element.et.target.flatCoordinates);
+                if (location[0] == beforeAry[0] && location[1] == beforeAry[1]) {
                     vSource.removeFeature(features[i]);
                 }
                 i++;
             });
-
-            let feature = format.readFeature(`POINT(${afterAry[0]} ${afterAry[1]})`, {
-                dataProjection: 'EPSG:3826',
-                featureProjection: 'EPSG:3857',
-            });
+            let geometry = ol.proj.fromLonLat(afterAry);
+            let feature = format.readFeature(`POINT(${geometry[0]} ${geometry[1]})`);
             vSource.addFeature(feature);
             $('#updateModel').modal('toggle');
         });
