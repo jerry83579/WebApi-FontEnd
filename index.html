@@ -385,8 +385,8 @@
 
         // 叢集
         const clusterSource = new ol.source.Cluster({
-            distance: 10,
-            minDistance: 2,
+            distance: 40,
+            minDistance: 20,
             source: vSource
         });
 
@@ -492,10 +492,8 @@
                         address: element.address,
                         geometry: format.readGeometry(`Point(${element.lat} ${element.longitude})`),
                     })
-                    // vector.addFeature(data);
                     vSource.addFeature(data);
                 });
-                console.log(vSource.getFeatures())
             }
             catch (error) {
                 console.log(`Error: ${error}`);
@@ -503,8 +501,6 @@
         }
 
         const init = () => {
-            console.log("layerWMTS", layerWMTS.getSource())
-            console.log("layerWMS", layerWMS.getSource())
             layerWMS.getSource().refresh();
             layerWMTS.getSource().refresh();
         }
@@ -538,7 +534,7 @@
             // 取消popup圖層及取消Point
             map.addInteraction(draw);
             snap = new ol.interaction.Snap({ source: vector });
-            map.addInteraction(snap)
+            map.addInteraction(snap);
         }
 
 
@@ -548,17 +544,17 @@
         map.on('singleclick', function (evt) {
             if ($(".pointInfo").hasClass('selected')) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-                    if (feature) {
-                        const features = vSource.getFeatures();
+                    // 查看信息
+                    if (feature && feature.C.features.length == 1) {
                         const coordinate = evt.coordinate;
                         $(".popup-sure").hide();
                         $(".popup-closer").hide();
                         $(".popup-sure-info").show();
                         $('#popup-content').html(pointInfoModel);
-                        $('#popup-content .popName').val(feature.get('name'));
-                        $('#popup-content .popFood').val(feature.get('food'));
-                        $('#popup-content .popPhone').val(feature.get('phone'));
-                        $('#popup-content .popAddress').val(feature.get('address'));
+                        $('#popup-content .popName').val(feature.C.features[0].get('name'));
+                        $('#popup-content .popFood').val(feature.C.features[0].get('food'));
+                        $('#popup-content .popPhone').val(feature.C.features[0].get('phone'));
+                        $('#popup-content .popAddress').val(feature.C.features[0].get('address'));
                         $('#popup-content .popLocation').val(feature.get('geometry').flatCoordinates);
                         overlay.setPosition(coordinate);
                     }
@@ -614,6 +610,7 @@
                 method: 'POST',
             }).then((response) => {
                 vector.clear();
+                vSource.clear();
                 dataInit();
             })
                 .catch((error) => {
@@ -701,6 +698,8 @@
                 method: 'POST',
             }).then((response) => {
                 dataInit();
+                vSource.clear();
+                vector.clear();
             })
                 .catch((error) => {
                 })
@@ -710,7 +709,7 @@
                 dataProjection: 'EPSG:3826',
                 featureProjection: 'EPSG:3857',
             });
-            vector.addFeature(feature);
+            vSource.addFeature(feature);
             $('#addModel').modal('toggle');
         });
 
@@ -733,11 +732,11 @@
             })
             table.row('.selected').remove().draw(false);
             $('#removeModel').modal('toggle');
-            var features = vector.getFeatures();
+            var features = vSource.getFeatures();
             //找到選擇的欄位的 Point 刪除
             features.forEach((element) => {
                 if (element.et.target.flatCoordinates[0] == Lat && element.et.target.flatCoordinates[1] == Longitude) {
-                    vector.removeFeature(features[i]);
+                    vSource.removeFeature(features[i]);
                 }
                 i++;
             });
@@ -782,10 +781,10 @@
             $(data).find('td:eq(' + 3 + ')').html($('.updateAddress').val());
             $(data).find('td:eq(' + 4 + ')').html($('.updateLocation').val());
             // 修改 Point (先刪除後新增)
-            let features = vector.getFeatures();
+            let features = vSource.getFeatures();
             features.forEach((element) => {
                 if (element.et.target.flatCoordinates[0] == beforeAry[0] && element.et.target.flatCoordinates[1] == beforeAry[1]) {
-                    vector.removeFeature(features[i]);
+                    vSource.removeFeature(features[i]);
                 }
                 i++;
             });
@@ -794,7 +793,7 @@
                 dataProjection: 'EPSG:3826',
                 featureProjection: 'EPSG:3857',
             });
-            vector.addFeature(feature);
+            vSource.addFeature(feature);
             $('#updateModel').modal('toggle');
         });
 
