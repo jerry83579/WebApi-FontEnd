@@ -648,16 +648,23 @@
                     "lat": Lat,
                     "longitude": Longitude
                 }
-                const api = await fetch(`${host}/api/Restaurant/post/info`, {
-                    mode: 'cors',
-                    body: JSON.stringify(body),
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                    method: 'POST',
-                })
-                dataInit();
-                overlay.setPosition(undefined);
+                try {
+                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                        mode: 'cors',
+                        body: JSON.stringify(body),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST',
+                    })
+                }
+                catch (e) {
+                    throw new Error("Oops,", e);
+                }
+                finally {
+                    dataInit();
+                    overlay.setPosition(undefined);
+                }
             }
         })
 
@@ -762,24 +769,28 @@
                     "lat": Lat,
                     "longitude": Longitude
                 }
-                const api = await fetch(`${host}/api/Restaurant/post/info`, {
-                    mode: 'cors',
-                    body: JSON.stringify(body),
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                    method: 'POST',
-                }).then((response) => {
-                    dataInit();
-                })
-                    .catch((error) => {
+                try {
+                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                        mode: 'cors',
+                        body: JSON.stringify(body),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST',
                     })
-                $('.addName').val("");
-                $('.addFood').val("");
-                $('.addAddress').val("");
-                $('.addPhone').val("");
-                $(".addLocation").val("");
-                $('#addModel').modal('toggle');
+                }
+                catch (e) {
+                    throw new Error('Oops,', e);
+                }
+                finally {
+                    dataInit();
+                    $('.addName').val("");
+                    $('.addFood').val("");
+                    $('.addAddress').val("");
+                    $('.addPhone').val("");
+                    $(".addLocation").val("");
+                    $('#addModel').modal('toggle');
+                }
             }
         });
 
@@ -793,24 +804,32 @@
             let Lat = parseFloat(strAry[0]);
             let Longitude = parseFloat(strAry[1]);
             let id = $(data).attr('data-id');
-            const api = await fetch(`${host}/api/Restaurant/delete/info/${id}`, {
-                mode: 'cors',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                method: 'DELETE',
-            })
-            table.row('.selected').remove().draw(false);
-            $('#removeModel').modal('toggle');
-            var features = vSource.getFeatures();
-            //找到選擇的欄位的 Point 刪除
-            features.forEach((element) => {
-                let location = ol.proj.toLonLat(element.et.target.flatCoordinates);
-                if (location[0] == Lat && location[1] == Longitude) {
-                    vSource.removeFeature(features[i]);
-                }
-                i++;
-            });
+            try {
+                const api = await fetch(`${host}/api/Restaurant/delete/info/${id}`, {
+                    mode: 'cors',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    method: 'DELETE',
+                })
+            }
+            catch (e) {
+                throw new Error("Oops,", e);
+            }
+            finally {
+                table.row('.selected').remove().draw(false);
+                $('#removeModel').modal('toggle');
+                var features = vSource.getFeatures();
+                //找到選擇的欄位的 Point 刪除
+                features.forEach((element) => {
+                    let location = ol.proj.toLonLat(element.et.target.flatCoordinates);
+                    if (location[0] == Lat && location[1] == Longitude) {
+                        vSource.removeFeature(features[i]);
+                    }
+                    i++;
+                });
+            }
+
         });
 
         //行修改
@@ -838,16 +857,23 @@
                 "lat": parseFloat(afterAry[0]),
                 "longitude": parseFloat(afterAry[1])
             }
-            const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
-                mode: 'cors',
-                body: JSON.stringify(body),
-                headers: {
-                    'content-type': 'application/json'
-                },
-                method: 'PUT',
-            })
-            $('#updateModel').modal('toggle');
-            dataInit();
+            try {
+                const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
+                    mode: 'cors',
+                    body: JSON.stringify(body),
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    method: 'PUT',
+                })
+            }
+            catch (e) {
+                throw new Error("Oops,", e)
+            }
+            finally {
+                $('#updateModel').modal('toggle');
+                dataInit();
+            }
         });
 
     </script>
