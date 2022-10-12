@@ -39,12 +39,17 @@
     <div class="container-fluid row">
         <div class="col-12 col-xl-6 d-flex flex-column">
             <!-- Button trigger modal -->
-            <div><button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
+            <div>
+                <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
                     data-bs-target="#addModel">新增單筆資料</button>
                 <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#removeModel" disabled>刪除單筆資料</button>
                 <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
+                <form enctype="multipart/form-data" action="api/upload" method="post">
+                    <input type="file" class="file-uploader mx-2" data-target="file-uploader" multiple="multiple" />
+                    <input type="submit" />
+                </form>
             </div>
 
             <div class="mt-2">
@@ -364,8 +369,11 @@
         const styleCache = {};
         const vector = new ol.source.Vector();
         const vSource = new ol.source.Vector();
-        // var host = "https://localhost:44329";
-        var host = "http://192.168.5.79/GISWeb/BackEndService"
+        // var host = "http://192.168.5.79/GISWeb/BackEndService";
+        var host = "https://localhost:44329";
+        // var host1 = "https://192.168.5.79/";
+        var host1 = "https://localhost:44370";
+
         var point = [];
 
         let dynamicStyle = {
@@ -488,28 +496,10 @@
             }),
         });
 
-        // WMS
-        // layerWMS = new ol.layer.Tile({
-        //     source: new ol.source.TileWMS({
-        //         url: 'https://wms.nlsc.gov.tw/wms',
-        //         params: {
-        //             'LAYERS': 'PHOTO2',
-        //             'TILED': true,
-        //         },
-        //         serverType: 'geoserver',
-        //     }),
-        // });
-        // map.addLayer(layerWMS);
-        map.addLayer(layerWMTS);
-        dataInit();
-        addInteraction();
-
         // 獲取資料
-        function dataInit() {
+        const dataInit = () => {
             try {
-                table.clear(true);
-                vSource.clear(true);
-                vector.clear(true)
+                refreshTable();
                 const response = fetch(`${host}/api/Restaurant/get/info`, {
                     mode: 'cors',
                     headers: {
@@ -520,7 +510,6 @@
                     return res.json();
                 }).then(result => {
                     result.forEach(element => {
-                        console.log(element)
                         let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.lat},${element.longitude}`]).draw(false).node();
                         $(newTable).attr('data-id', element.id);
                         var data = new ol.Feature({
@@ -538,6 +527,10 @@
             catch (error) {
                 console.log(`Error: ${error}`);
             }
+        }
+
+        const refreshTable = () => {
+            table.clear();
         }
 
         const init = () => {
@@ -566,6 +559,11 @@
             $("#opacity-output").val(opacity.toFixed(2));
         }
 
+        const refreshVector = () => {
+            vSource.clear(true);
+            vector.clear(true);
+        }
+
         function addInteraction() {
             draw = new ol.interaction.Draw({
                 source: vector,
@@ -577,16 +575,41 @@
             map.addInteraction(snap);
         }
 
+        map.addLayer(layerWMTS);
+        dataInit();
+        addInteraction();
 
-        // map listener
+        // listener
+        $('form').on('submit', function (event) {
+            const formData = new FormData();
+            if ($(".file-uploader")[0].files.length > 0) {
+                formData.append("file", $(".file-uploader")[0].files[0]);
+                console.log($(".file-uploader")[0].files[0])
+                console.log(formData, "formData")
+                fetch(`${host1}/post/uploadFile`, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    mode: 'cors',
+                    data: formData,
+                    dataType: "json",
+                    contentType: false,
+                    processData: false,
+                    method: 'POST'
+                }).then(responseBis => responseBis.json())
+                    .then(json => console.log(json))
+                    .catch(e => console.error(e));
+                return false;
+            }
+        })
 
+        // map
         // 產生popup圖層
         map.on('singleclick', function (evt) {
             if ($(".pointInfo").hasClass('selected')) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     // 查看信息
                     if (feature && feature.C.features.length == 1) {
-                        console.log(feature.C.features[0].get('name'))
                         const coordinate = evt.coordinate;
                         let lonLat = ol.proj.toLonLat(coordinate)
                         $(".popup-sure").hide();
@@ -662,6 +685,7 @@
                     throw new Error("Oops,", e);
                 }
                 finally {
+                    refreshVector()
                     dataInit();
                     overlay.setPosition(undefined);
                 }
@@ -704,26 +728,8 @@
         })
 
         $("#opacity-input").on('input', update);
-        // Datatable addlistener
-        //判斷選取
 
-
-        function flickrStyle(feature) {
-            const style = new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 6,
-                    stroke: new ol.style.Stroke({
-                        color: 'white',
-                        width: 2
-                    }),
-                    fill: new ol.style.Fill({
-                        color: 'green'
-                    })
-                })
-            });
-            return [style];
-        }
-
+        // table
         $('#table_id_example tbody').on('click', 'tr', function (e) {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
@@ -783,6 +789,7 @@
                     throw new Error('Oops,', e);
                 }
                 finally {
+                    refreshVector();
                     dataInit();
                     $('.addName').val("");
                     $('.addFood').val("");
@@ -819,15 +826,8 @@
             finally {
                 table.row('.selected').remove().draw(false);
                 $('#removeModel').modal('toggle');
-                var features = vSource.getFeatures();
-                //找到選擇的欄位的 Point 刪除
-                features.forEach((element) => {
-                    let location = ol.proj.toLonLat(element.et.target.flatCoordinates);
-                    if (location[0] == Lat && location[1] == Longitude) {
-                        vSource.removeFeature(features[i]);
-                    }
-                    i++;
-                });
+                refreshVector();
+                dataInit();
             }
 
         });
@@ -872,6 +872,7 @@
             }
             finally {
                 $('#updateModel').modal('toggle');
+                refreshVector();
                 dataInit();
             }
         });
