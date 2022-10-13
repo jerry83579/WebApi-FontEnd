@@ -9,6 +9,7 @@
     <!-- Boostrap5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -46,9 +47,15 @@
                     data-bs-target="#removeModel" disabled>刪除單筆資料</button>
                 <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
+                <button type="button" class="btn btn-secondary downloadFile mx-2 my-2" id="button"><i
+                        class="bi bi-download"></i>下載定位點資訊(.ods檔案)</button>
                 <form enctype="multipart/form-data" action="api/upload" method="post">
-                    <input type="file" class="file-uploader mx-2" data-target="file-uploader" multiple="multiple" />
-                    <input type="submit" />
+                    <div class="input-group">
+                        <input type="file" class="form-control file-uploader" id="inputGroupFile04" multiple="multiple"
+                            data-target="file-uploader" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                        <button type="submit" class="btn btn-primary">上傳</button>
+                    </div>
+
                 </form>
             </div>
 
@@ -580,6 +587,7 @@
         addInteraction();
 
         // listener
+        // file
         $('form').on('submit', function (event) {
             const formData = new FormData();
             if ($(".file-uploader")[0].files.length > 0) {
@@ -602,6 +610,43 @@
                 return false;
             }
         })
+
+        // file
+        $(".downloadFile").on('click', function () {
+            fetch(`${host1}/get/downloadFile`, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                mode: 'cors',
+                contentType: false,
+                processData: false,
+                method: 'GET'
+            }).then((response) => {
+                const reader = response.body.getReader();
+                console.log(reader)
+                return new ReadableStream({
+                    start(controller) {
+                        return pump();
+                        function pump() {
+                            return reader.read().then(({ done, value }) => {
+                                console.log(value)
+                                // When no more data needs to be consumed, close the stream
+                                if (done) {
+                                    console.log("@@")
+                                    controller.close();
+                                    return;
+                                }
+                                // Enqueue the next data chunk into our target stream
+                                controller.enqueue(value);
+                                return pump();
+                            });
+                        }
+                    }
+                })
+            });
+
+        })
+
 
         // map
         // 產生popup圖層
