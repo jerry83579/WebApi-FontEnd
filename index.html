@@ -47,15 +47,16 @@
                     data-bs-target="#removeModel" disabled>刪除單筆資料</button>
                 <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
-                <button type="button" class="btn btn-secondary downloadFile mx-2 my-2" id="button"><i
+                <button type="button" class="btn btn-secondary downloadOds mx-2 my-2" id="button"><i
                         class="bi bi-download"></i>下載定位點資訊(.ods檔案)</button>
-                <form enctype="multipart/form-data" action="api/upload" method="post">
+                <button type="button" class="btn btn-secondary downloadOds my-2" id="button"><i
+                        class="bi bi-download"></i>下載定位點資訊(.shp檔案)</button>
+                <form enctype="multipart/form-data" action="/post/uploadOds" method="post">
                     <div class="input-group">
                         <input type="file" class="form-control file-uploader" id="inputGroupFile04" multiple="multiple"
                             data-target="file-uploader" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                         <button type="submit" class="btn btn-primary">上傳</button>
                     </div>
-
                 </form>
             </div>
 
@@ -508,7 +509,6 @@
             try {
                 refreshTable();
                 const response = fetch(`${host}/api/Restaurant/get/info`, {
-                    mode: 'cors',
                     headers: {
                         'content-type': 'application/json'
                     },
@@ -516,6 +516,7 @@
                 }).then(res => {
                     return res.json();
                 }).then(result => {
+                    console.log(result)
                     result.forEach(element => {
                         let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.lat},${element.longitude}`]).draw(false).node();
                         $(newTable).attr('data-id', element.id);
@@ -534,6 +535,40 @@
             catch (error) {
                 console.log(`Error: ${error}`);
             }
+        }
+
+        const uploadOdsApi = (formData) => {
+            return fetch(`${host1}/post/uploadOds`, {
+                body: formData,
+                method: 'POST'
+            })
+        }
+
+        const uploadShpApi = (formData) => {
+            return fetch(`${host1}/post/uploadShp`, {
+                body: formData,
+                method: 'POST'
+            })
+        }
+
+        const downloadOdsApi = (formData) => {
+            return fetch(`${host1}/get/downloadOds`, {
+                method: 'GET'
+            }).then((response) => response.blob())
+                .then((blob) => {
+                    console.log(blob)
+                    var url = window.URL.createObjectURL(blob); // create url from blob
+                    var fileLink = document.createElement('a'); // create link for file
+                    fileLink.href = url;
+                    console.log(fileLink)
+                    fileLink.download = 'New.ods'; // download filename
+                    document.body.appendChild(fileLink); // append file link to download
+                    fileLink.click();
+                    fileLink.remove(); // remove file link after click
+                })
+                .catch((error) => {
+                    // Handle error here.
+                });
         }
 
         const refreshTable = () => {
@@ -587,66 +622,38 @@
         addInteraction();
 
         // listener
-        // file
-        $('form').on('submit', function (event) {
-            const formData = new FormData();
+        // 上傳 file
+        $('form').on('submit', async function (event) {
+            event.preventDefault();
             if ($(".file-uploader")[0].files.length > 0) {
+                const formData = new FormData();
+                let fileName = $(".file-uploader")[0].files[0].name;
+                let strAry = fileName.split('.');
+                let fileExtension = strAry[1];
                 formData.append("file", $(".file-uploader")[0].files[0]);
-                console.log($(".file-uploader")[0].files[0])
-                console.log(formData, "formData")
-                fetch(`${host1}/post/uploadFile`, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    mode: 'cors',
-                    data: formData,
-                    dataType: "json",
-                    contentType: false,
-                    processData: false,
-                    method: 'POST'
-                }).then(responseBis => responseBis.json())
-                    .then(json => console.log(json))
-                    .catch(e => console.error(e));
-                return false;
-            }
-        })
-
-        // file
-        $(".downloadFile").on('click', function () {
-            fetch(`${host1}/get/downloadFile`, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                mode: 'cors',
-                contentType: false,
-                processData: false,
-                method: 'GET'
-            }).then((response) => {
-                const reader = response.body.getReader();
-                console.log(reader)
-                return new ReadableStream({
-                    start(controller) {
-                        return pump();
-                        function pump() {
-                            return reader.read().then(({ done, value }) => {
-                                console.log(value)
-                                // When no more data needs to be consumed, close the stream
-                                if (done) {
-                                    console.log("@@")
-                                    controller.close();
-                                    return;
-                                }
-                                // Enqueue the next data chunk into our target stream
-                                controller.enqueue(value);
-                                return pump();
-                            });
-                        }
+                try {
+                    switch (fileExtension) {
+                        case "ods":
+                            await uploadOdsApi(formData);
+                            break;
+                        case "shp":
+                            await uploadShpApi(formData);
+                            break;
+                        default:
+                            break;
                     }
-                })
-            });
+                }
+                catch (e) {
+                    throw new Error("Oops,", e);
+                }
+                refreshTable();
+                dataInit();
+            }
+        });
 
+        $(".downloadOds").on('click', async function () {
+            await downloadOdsApi();
         })
-
 
         // map
         // 產生popup圖層
