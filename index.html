@@ -370,10 +370,14 @@
         const container = $('#popup')[0];
         const pointAddModel = $('.pointAddModel').html();
         const pointInfoModel = $('.pointInfoModel').html();
-        const table = $('#table_id_example').DataTable();
+        const table = $('#table_id_example').DataTable({
+            select: {
+                style: 'multi',
+            }
+        });
 
         const format = new ol.format.WKT();
-        const projection = ol.proj.get("EPSG:3826");
+        const projection = ol.proj.get("EPSG:3857");
         const styleCache = {};
         const vector = new ol.source.Vector();
         const vSource = new ol.source.Vector();
@@ -555,11 +559,9 @@
                 method: 'GET'
             }).then((response) => response.blob())
                 .then((blob) => {
-                    console.log(blob)
                     var url = window.URL.createObjectURL(blob); // create url from blob
                     var fileLink = document.createElement('a'); // create link for file
                     fileLink.href = url;
-                    console.log(fileLink)
                     fileLink.download = 'New.ods'; // download filename
                     document.body.appendChild(fileLink); // append file link to download
                     fileLink.click();
@@ -575,11 +577,9 @@
                 method: 'GET'
             }).then((response) => response.blob())
                 .then((blob) => {
-                    console.log(blob)
                     var url = window.URL.createObjectURL(blob); // create url from blob
                     var fileLink = document.createElement('a'); // create link for file
                     fileLink.href = url;
-                    console.log(fileLink)
                     fileLink.download = 'Shapefile.shp'; // download filename
                     document.body.appendChild(fileLink); // append file link to download
                     fileLink.click();
@@ -806,18 +806,25 @@
 
         // table
         $('#table_id_example tbody').on('click', 'tr', function (e) {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-                $('.updateButton').attr("disabled", true);
-                $('.removeButton').attr("disabled", true);
-            } else {
+            $(this).toggleClass('selected');
+            switch ($('.selected').length) {
+                case 0:
+                    $('.removeButton').attr("disabled", true);
+                    $('.updateButton').attr("disabled", true);
+                    break;
+                case 1:
+                    $('.removeButton').attr("disabled", false);
+                    $('.updateButton').attr("disabled", false);
+                    break;
+                default:
+                    $('.removeButton').attr("disabled", false);
+                    $('.updateButton').attr("disabled", true);
+                    break;
+            }
+            if ($('#table_id_example tbody tr').hasClass('selected')) {
                 let geometryArr = $(e.currentTarget).find('td:eq(' + 4 + ')').html();
                 let geometry = geometryArr.split(",");
                 let location = ol.proj.fromLonLat([parseFloat(geometry[0]), parseFloat(geometry[1])])
-                table.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                $('.updateButton').attr("disabled", false);
-                $('.removeButton').attr("disabled", false);
                 point.push(parseInt(e.currentTarget.getAttribute("data-id")));
                 view.animate({
                     center: [location[0], location[1]],
@@ -880,14 +887,17 @@
         //行刪除
         $('#removeRow').click(async function () {
             let i = 0;
-            let data = table.row('.selected').node();
-            let location = $(data).find('td:eq(' + 4 + ')').html();
-            let strAry = location.split(',');
-            let Lat = parseFloat(strAry[0]);
-            let Longitude = parseFloat(strAry[1]);
-            let id = $(data).attr('data-id');
+            let ids;
+            let location;
+            let idArray = [];
+            let selectedData = table.rows('.selected').nodes();
+            let selectedLength = table.rows('.selected').nodes().length;
+            for (let index = 0; index < selectedLength; index++) {
+                idArray.push($(selectedData[index]).attr('data-id'));
+            }
+            ids = idArray.join(',');
             try {
-                const api = await fetch(`${host}/api/Restaurant/delete/info/${id}`, {
+                const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
                     mode: 'cors',
                     headers: {
                         'content-type': 'application/json'
@@ -904,7 +914,6 @@
                 refreshVector();
                 dataInit();
             }
-
         });
 
         //行修改
