@@ -41,25 +41,26 @@
         <div class="col-12 col-xl-6 d-flex flex-column">
             <!-- Button trigger modal -->
             <div>
-                <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
-                    data-bs-target="#addModel">新增單筆資料</button>
-                <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
-                    data-bs-target="#removeModel" disabled>刪除單筆資料</button>
-                <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
-                    data-bs-target="#updateModel" disabled>修改單筆資料</button>
-                <button type="button" class="btn btn-secondary downloadOds mx-2 my-2" id="button"><i
+                <button type="button" class="btn btn-secondary downloadOds my-2" id="button"><i
                         class="bi bi-download"></i>下載定位點資訊(.ods檔案)</button>
                 <button type="button" class="btn btn-secondary downloadShp my-2" id="button"><i
                         class="bi bi-download"></i>下載定位點資訊(.shp檔案)</button>
-                <form enctype="multipart/form-data" action="/post/uploadOds" method="post">
+                <button type="button" class="btn btn-secondary downloadKml my-2" id="button"><i
+                        class="bi bi-download"></i>下載定位點資訊(.kml檔案)</button>
+                <form enctype="multipart/form-data" method="post">
                     <div class="input-group">
                         <input type="file" class="form-control file-uploader" id="inputGroupFile04" multiple="multiple"
                             data-target="file-uploader" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                         <button type="submit" class="btn btn-primary">上傳</button>
                     </div>
                 </form>
+                <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
+                    data-bs-target="#addModel">新增單筆資料</button>
+                <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#removeModel" disabled>刪除單筆資料</button>
+                <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#updateModel" disabled>修改單筆資料</button>
             </div>
-
             <div class="mt-2">
                 <table id="table_id_example" class="table table-striped">
                     <thead>
@@ -554,6 +555,13 @@
             })
         }
 
+        const uploadKmlApi = (formData) => {
+            return fetch(`${host1}/post/uploadKml`, {
+                body: formData,
+                method: 'POST'
+            })
+        }
+
         const downloadOdsApi = (formData) => {
             return fetch(`${host1}/get/downloadOds`, {
                 method: 'GET'
@@ -581,6 +589,24 @@
                     var fileLink = document.createElement('a'); // create link for file
                     fileLink.href = url;
                     fileLink.download = 'Shapefile.shp'; // download filename
+                    document.body.appendChild(fileLink); // append file link to download
+                    fileLink.click();
+                    fileLink.remove(); // remove file link after click
+                })
+                .catch((error) => {
+                    // Handle error here.
+                });
+        }
+
+        const downloadKmlApi = (formData) => {
+            return fetch(`${host1}/get/downloadKml`, {
+                method: 'GET'
+            }).then((response) => response.blob())
+                .then((blob) => {
+                    var url = window.URL.createObjectURL(blob); // create url from blob
+                    var fileLink = document.createElement('a'); // create link for file
+                    fileLink.href = url;
+                    fileLink.download = 'New.kml'; // download filename
                     document.body.appendChild(fileLink); // append file link to download
                     fileLink.click();
                     fileLink.remove(); // remove file link after click
@@ -658,6 +684,9 @@
                         case "shp":
                             await uploadShpApi(formData);
                             break;
+                        case "kml":
+                            await uploadKmlApi(formData);
+                            break;
                         default:
                             break;
                     }
@@ -676,6 +705,10 @@
 
         $(".downloadShp").on('click', async function () {
             await downloadShpApi();
+        })
+
+        $(".downloadKml").on('click', async function () {
+            await downloadKmlApi();
         })
 
         // map
