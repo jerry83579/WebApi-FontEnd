@@ -60,7 +60,20 @@
                     data-bs-target="#removeModel" disabled>刪除單筆資料</button>
                 <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
+                <div>
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        複合式查詢
+                    </button>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                            Some placeholder content for the collapse component. This panel is hidden by default but
+                            revealed when the user activates the relevant trigger.
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div class="mt-2">
                 <table id="table_id_example" class="table table-striped">
                     <thead>
@@ -203,8 +216,8 @@
                                     <input class="updateLocation form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
-
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                             <button type="button" class="btn btn-primary" id="updateRow">確定</button>
@@ -363,8 +376,8 @@
         </div>
     </div>
     <script>
-        var layerWMTS;
         // var layerWMS;
+        var layerWMTS;
         var draw, snap, url;
         var basemap = 0;
         var features;
@@ -383,8 +396,8 @@
         const vector = new ol.source.Vector();
         const vSource = new ol.source.Vector();
         // var host = "http://192.168.5.79/GISWeb/BackEndService";
+        // var host1 = "http://192.168.5.79/GISWeb/OdsExport";
         var host = "https://localhost:44329";
-        // var host1 = "https://192.168.5.79/";
         var host1 = "https://localhost:44370";
 
         var point = [];
@@ -509,10 +522,11 @@
             }),
         });
 
+
+
         // 獲取資料
         const dataInit = () => {
             try {
-                refreshTable();
                 const response = fetch(`${host}/api/Restaurant/get/info`, {
                     headers: {
                         'content-type': 'application/json'
@@ -617,7 +631,7 @@
         }
 
         const refreshTable = () => {
-            table.clear();
+            table.clear().draw();
         }
 
         const init = () => {
@@ -656,15 +670,12 @@
                 source: vector,
                 type: $('.defaultType').html(),
             });
-            // 取消popup圖層及取消Point
             map.addInteraction(draw);
             snap = new ol.interaction.Snap({ source: vSource });
             map.addInteraction(snap);
         }
 
-        map.addLayer(layerWMTS);
-        dataInit();
-        addInteraction();
+
 
         // listener
         // 上傳 file
@@ -714,7 +725,7 @@
         // map
         // 產生popup圖層
         map.on('singleclick', function (evt) {
-            if ($(".pointInfo").hasClass('selected')) {
+            if ($(".pointInfo").hasClass('selectedInfo')) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     // 查看信息
                     if (feature && feature.C.features.length == 1) {
@@ -748,8 +759,7 @@
         });
 
         $(".pointInfo").on('click', function () {
-            $('#pointInfo').modal('toggle');
-            $(".pointInfo").addClass("selected");
+            $(".pointInfo").addClass("selectedInfo");
             map.removeInteraction(draw);
             map.removeInteraction(snap);
         })
@@ -793,7 +803,8 @@
                     throw new Error("Oops,", e);
                 }
                 finally {
-                    refreshVector()
+                    refreshVector();
+                    refreshTable();
                     dataInit();
                     overlay.setPosition(undefined);
                 }
@@ -820,15 +831,15 @@
             init();
             changeLayer(layer);
             $('.layerName').html(e.target.innerHTML);
-            if ($(this).hasClass('selected')) {
+            if ($(this).hasClass('selectedLayer')) {
             } else {
-                $('.dropdown-layer li').removeClass('selected');
-                $(this).addClass('selected');
+                $('.dropdown-layer li').removeClass('selectedLayer');
+                $(this).addClass('selectedLayer');
             }
         });
 
         $('.defaultType').on('click', function (e) {
-            $(".pointInfo").removeClass("selected");
+            $(".pointInfo").removeClass("selectedInfo");
             $('.defaultType').html(e.target.innerHTML);
             map.removeInteraction(draw);
             map.removeInteraction(snap);
@@ -837,8 +848,18 @@
 
         $("#opacity-input").on('input', update);
 
+        // const animation = async (lat, long) => {
+        //     return new Promise((reslove, reject) => {
+        //         view.animate({
+        //             center: [lat, long],
+        //             duration: 2000,
+        //             zoom: 12
+        //         },);
+        //     });
+        // }
+
         // table
-        $('#table_id_example tbody').on('click', 'tr', function (e) {
+        $('#table_id_example tbody').on('click', 'tr', async function (e) {
             $(this).toggleClass('selected');
             switch ($('.selected').length) {
                 case 0:
@@ -864,6 +885,8 @@
                     duration: 2000,
                     zoom: 12
                 },);
+                // await animation(location[0], location[1]);
+
             }
         });
 
@@ -905,6 +928,7 @@
                 }
                 finally {
                     refreshVector();
+                    refreshTable();
                     dataInit();
                     $('.addName').val("");
                     $('.addFood').val("");
@@ -944,7 +968,9 @@
             finally {
                 table.row('.selected').remove().draw(false);
                 $('#removeModel').modal('toggle');
+                $('.updateButton').attr("disabled", true);
                 refreshVector();
+                refreshTable();
                 dataInit();
             }
         });
@@ -990,9 +1016,16 @@
             finally {
                 $('#updateModel').modal('toggle');
                 refreshVector();
+                refreshTable();
                 dataInit();
             }
         });
+
+        (function main() {
+            map.addLayer(layerWMTS);
+            addInteraction();
+            dataInit();
+        })();
 
     </script>
     <!-- Bootstrap5.0 js -->
