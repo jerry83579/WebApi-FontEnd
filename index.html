@@ -60,15 +60,52 @@
                     data-bs-target="#removeModel" disabled>刪除單筆資料</button>
                 <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
                     data-bs-target="#updateModel" disabled>修改單筆資料</button>
+                <hr>
                 <div>
-                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                         複合式查詢
                     </button>
                     <div class="collapse" id="collapseExample">
                         <div class="card card-body">
-                            Some placeholder content for the collapse component. This panel is hidden by default but
-                            revealed when the user activates the relevant trigger.
+                            <div class="row">
+                                <div class="col-2">
+                                    <label>區域 :</label>
+                                    <select class="form-select areaSelect" aria-label="Default select example">
+                                        <option value="" selected>請選擇</option>
+                                        <option value="西屯區">西屯區</option>
+                                        <option value="北屯區">北屯區</option>
+                                        <option value="北區">北區</option>
+                                        <option value="中區">中區</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <label>類別 :</label>
+                                    <select class="form-select typeSelect" aria-label="Default select example">
+                                        <option value="" selected>請選擇</option>
+                                        <option value="3C產品">3C產品</option>
+                                        <option value="家用家具">家用家具</option>
+                                        <option value="日常用品">日常用品</option>
+                                        <option value="運動用品">運動用品</option>
+                                        <option value="食物">食物</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <label>價格低於 :</label>
+                                    <select class="form-select priceSelect" aria-label="Default select example">
+                                        <option value="" selected>請選擇</option>
+                                        <option value="400">400</option>
+                                        <option value="600">600</option>
+                                        <option value="800">800</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-12 mt-2">
+                                    <button type="button" class="btn btn-danger clearQuery">清空查詢</button>
+                                    <button type="button" class="btn btn-primary complexQuery">查詢</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -78,8 +115,8 @@
                 <table id="table_id_example" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>餐廳名字</th>
-                            <th>食物</th>
+                            <th>訂購類別</th>
+                            <th>價格</th>
                             <th>電話</th>
                             <th>地址</th>
                             <th>座標</th>
@@ -102,18 +139,18 @@
                         <div class="modal-body">
                             <div class="row align-items-center">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class="col-form-label">餐廳名字</label>
+                                    <label for="inputPassword6" class="col-form-label">訂購類別</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="addName form-control" aria-describedby="passwordHelpInline">
+                                    <input class="addCategory form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class="col-form-label">食物</label>
+                                    <label for="inputPassword6" class="col-form-label">價格</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="addFood form-control" aria-describedby="passwordHelpInline">
+                                    <input class="addPrice form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center mt-2">
@@ -178,18 +215,18 @@
                         <div class="modal-body">
                             <div class="row align-items-center">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">餐廳名字</label>
+                                    <label for="inputPassword6" class=" col-form-label">訂購類別</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="updateName form-control" aria-describedby="passwordHelpInline">
+                                    <input class="updateCategory form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center mt-2">
                                 <div class="col-3 text-end">
-                                    <label for="inputPassword6" class=" col-form-label">食物</label>
+                                    <label for="inputPassword6" class=" col-form-label">價格</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="updateFood form-control" aria-describedby="passwordHelpInline">
+                                    <input class="updatePrice form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center mt-2">
@@ -236,18 +273,18 @@
                         <div class="modal-body">
                             <div class="row align-items-center my-2">
                                 <div class="col-3 text-end">
-                                    <label class="col-form-label">餐廳名字</label>
+                                    <label class="col-form-label">訂購類別</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="popName form-control" aria-describedby="passwordHelpInline">
+                                    <input class="popCategory form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center my-2">
                                 <div class="col-3 text-end">
-                                    <label class="col-form-label">食物</label>
+                                    <label class="col-form-label">價格</label>
                                 </div>
                                 <div class="col-7">
-                                    <input class="popFood form-control" aria-describedby="passwordHelpInline">
+                                    <input class="popPrice form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center my-2">
@@ -290,18 +327,19 @@
                         <div class="modal-body">
                             <div class="row align-items-center my-2">
                                 <div class="col-3 text-end">
-                                    <label class="col-form-label">餐廳名字</label>
+                                    <label class="col-form-label">訂購類別</label>
                                 </div>
                                 <div class="col-7">
-                                    <input disabled class="popName form-control" aria-describedby="passwordHelpInline">
+                                    <input disabled class="popCategory form-control"
+                                        aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center my-2">
                                 <div class="col-3 text-end">
-                                    <label class="col-form-label">食物</label>
+                                    <label class="col-form-label">價格</label>
                                 </div>
                                 <div class="col-7">
-                                    <input disabled class="popFood form-control" aria-describedby="passwordHelpInline">
+                                    <input disabled class="popPrice form-control" aria-describedby="passwordHelpInline">
                                 </div>
                             </div>
                             <div class="row align-items-center my-2">
@@ -536,12 +574,12 @@
                     return res.json();
                 }).then(result => {
                     result.forEach(element => {
-                        let newTable = table.row.add([element.name, element.food, element.phone, element.address, `${element.location.coordinates[0]},${element.location.coordinates[1]}`]).draw(false).node();
+                        let newTable = table.row.add([element.category, element.price, element.phone, element.address, `${element.location.coordinates[0]},${element.location.coordinates[1]}`]).draw(false).node();
                         $(newTable).attr('data-id', element.id);
                         var data = new ol.Feature({
                             id: element.id,
-                            name: element.name,
-                            food: element.food,
+                            category: element.Category,
+                            price: element.price,
                             phone: element.phone,
                             address: element.address,
                             geometry: new ol.geom.Point(ol.proj.transform([element.location.coordinates[0], element.location.coordinates[1]], 'EPSG:4326', 'EPSG:3857'))
@@ -735,8 +773,8 @@
                         $(".popup-closer").hide();
                         $(".popup-sure-info").show();
                         $('#popup-content').html(pointInfoModel);
-                        $('#popup-content .popName').val(feature.C.features[0].get('name'));
-                        $('#popup-content .popFood').val(feature.C.features[0].get('food'));
+                        $('#popup-content .popCategory').val(feature.C.features[0].get('Category'));
+                        $('#popup-content .popPrice').val(feature.C.features[0].get('Price'));
                         $('#popup-content .popPhone').val(feature.C.features[0].get('phone'));
                         $('#popup-content .popAddress').val(feature.C.features[0].get('address'));
                         $('#popup-content .popLocation').val(lonLat);
@@ -768,11 +806,11 @@
         // 確定popup圖層及新增Point
         $('.popup-sure').on('click', async function () {
             let location = $("#popup-content .popLocation").val();
-            let name = $("#popup-content .popName").val();
-            let food = $("#popup-content .popFood").val();
+            let category = $("#popup-content .popCategory").val();
+            let price = $("#popup-content .popPrice").val();
             let phone = $("#popup-content .popPhone").val();
             let address = $("#popup-content .popAddress").val();
-            if ([name, food, address, phone, location].includes("")) {
+            if ([category, price, address, phone, location].includes("")) {
                 alert("值不能為空")
             }
             else {
@@ -782,8 +820,8 @@
                 let Lat = parseFloat(strAry[0]);
                 let Longitude = parseFloat(strAry[1]);
                 const body = {
-                    "name": name,
-                    "food": food,
+                    "category": Category,
+                    "price": price,
                     "address": address,
                     "phone": phone,
                     "lat": Lat,
@@ -830,7 +868,7 @@
             let layer = e.currentTarget.getAttribute('data-id');
             init();
             changeLayer(layer);
-            $('.layerName').html(e.target.innerHTML);
+            $('.layerCategory').html(e.target.innerHTML);
             if ($(this).hasClass('selectedLayer')) {
             } else {
                 $('.dropdown-layer li').removeClass('selectedLayer');
@@ -847,16 +885,6 @@
         })
 
         $("#opacity-input").on('input', update);
-
-        // const animation = async (lat, long) => {
-        //     return new Promise((reslove, reject) => {
-        //         view.animate({
-        //             center: [lat, long],
-        //             duration: 2000,
-        //             zoom: 12
-        //         },);
-        //     });
-        // }
 
         // table
         $('#table_id_example tbody').on('click', 'tr', async function (e) {
@@ -885,20 +913,18 @@
                     duration: 2000,
                     zoom: 12
                 },);
-                // await animation(location[0], location[1]);
-
             }
         });
 
 
         // 行新增
         $('#addRow').on('click', async function () {
-            let name = $('.addName').val();
-            let food = $('.addFood').val();
+            let category = $('.addCategory').val();
+            let price = $('.addPrice').val();
             let address = $('.addAddress').val();
             let phone = $('.addPhone').val();
             let location = $(".addLocation").val();
-            if ([name, food, address, phone, location].includes("")) {
+            if ([Category, price, address, phone, location].includes("")) {
                 alert("值不能為空")
             }
             else {
@@ -906,8 +932,8 @@
                 let Lat = parseFloat(strAry[0]);
                 let Longitude = parseFloat(strAry[1]);
                 let body = {
-                    "name": $('.addName').val(),
-                    "food": $('.addFood').val(),
+                    "category": $('.addCategory').val(),
+                    "price": $('.addPrice').val(),
                     "address": $('.addAddress').val(),
                     "phone": $('.addPhone').val(),
                     "lat": Lat,
@@ -930,8 +956,8 @@
                     refreshVector();
                     refreshTable();
                     dataInit();
-                    $('.addName').val("");
-                    $('.addFood').val("");
+                    $('.addCategory').val("");
+                    $('.addpPrice').val("");
                     $('.addAddress').val("");
                     $('.addPhone').val("");
                     $(".addLocation").val("");
@@ -953,6 +979,7 @@
                 idArray.push($(selectedData[index]).attr('data-id'));
             }
             ids = idArray.join(',');
+
             try {
                 const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
                     mode: 'cors',
@@ -978,8 +1005,8 @@
         //行修改
         $('.updateButton').click(function () {
             let data = table.row('.selected').node();
-            $('.updateName').val($(data).find('td:eq(' + 0 + ')').html());
-            $('.updateFood').val($(data).find('td:eq(' + 1 + ')').html());
+            $('.updateCategory').val($(data).find('td:eq(' + 0 + ')').html());
+            $('.updatePrice').val($(data).find('td:eq(' + 1 + ')').html());
             $('.updatePhone').val($(data).find('td:eq(' + 2 + ')').html());
             $('.updateAddress').val($(data).find('td:eq(' + 3 + ')').html());
             $('.updateLocation').val($(data).find('td:eq(' + 4 + ')').html());
@@ -993,8 +1020,8 @@
             let afterAry = location.split(',');
             let id = $(data).attr('data-id');
             let body = {
-                "name": $('.updateName').val(),
-                "food": $('.updateFood').val(),
+                "category": $('.updateCategory').val(),
+                "price": $('.updatePrice').val(),
                 "address": $('.updateAddress').val(),
                 "phone": $('.updatePhone').val(),
                 "lat": parseFloat(afterAry[0]),
@@ -1002,7 +1029,6 @@
             }
             try {
                 const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
-                    mode: 'cors',
                     body: JSON.stringify(body),
                     headers: {
                         'content-type': 'application/json'
@@ -1021,11 +1047,46 @@
             }
         });
 
-        (function main() {
-            map.addLayer(layerWMTS);
-            addInteraction();
-            dataInit();
-        })();
+        $(".clearQuery").on('click', function () {
+            $(".areaSelect").val("請選擇");
+            $(".typeSelect").val("請選擇");
+            $(".priceSelect").val("請選擇");
+        })
+
+        //複合式查詢
+        $(".complexQuery").on('click', async function () {
+            let queryArray = [];
+            let params;
+            const queruLength = $(".form-select").length;
+            for (let i = 0; i < 3; i++) {
+                if ($(".form-select").val() != "") {
+                    queryArray.push($(".form-select").eq(i).val());
+                }
+            }
+            params = queryArray.join(',');
+            try {
+                const response = fetch(`${host}/api/Restaurant/get/CompoundQueryData/${params}`, {
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    method: 'Get'
+                }).then(res => {
+                    return res.json();
+                }).then(result => {
+                    result.forEach(element => {
+                        console.log(element)
+                    });
+                })
+            }
+            catch (error) {
+                console.log(`Error: ${error}`);
+            }
+        });
+
+        map.addLayer(layerWMTS);
+        addInteraction();
+        dataInit();
+
 
     </script>
     <!-- Bootstrap5.0 js -->
