@@ -1,610 +1,404 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Web Api Test</title>
     <!-- Boostrap5 -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Datatable -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
-    />
-    <script
-      type="text/javascript"
-      charset="utf8"
-      src="https://code.jquery.com/jquery-3.5.1.js"
-    ></script>
-    <script
-      type="text/javascript"
-      charset="utf8"
-      src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"
-    ></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 
     <!-- Datatable Boostrap5.0 cs -->
     <!-- <script type="text/javascript" charset="utf8"
         src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script> -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css"
-    />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" />
 
     <!-- OpenLayers -->
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.css"
-    />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.css" />
 
     <!-- import -->
     <link rel="stylesheet" href="style.css" />
-  </head>
+</head>
 
-  <body>
+<body>
     <div class="container-fluid row">
-      <div class="col-12 col-xl-6 d-flex flex-column">
-        <!-- Button trigger modal -->
-        <div>
-          <button
-            type="button"
-            class="btn btn-secondary downloadOds my-2"
-            id="button"
-          >
-            <i class="bi bi-download"></i>下載定位點資訊(.ods檔案)
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary downloadShp my-2"
-            id="button"
-          >
-            <i class="bi bi-download"></i>下載定位點資訊(.shp檔案)
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary downloadKml my-2"
-            id="button"
-          >
-            <i class="bi bi-download"></i>下載定位點資訊(.kml檔案)
-          </button>
-          <form enctype="multipart/form-data" method="post">
-            <div class="input-group">
-              <input
-                type="file"
-                class="form-control file-uploader"
-                id="inputGroupFile04"
-                multiple="multiple"
-                data-target="file-uploader"
-                aria-describedby="inputGroupFileAddon04"
-                aria-label="Upload"
-              />
-              <button type="submit" class="btn btn-primary">上傳</button>
-            </div>
-          </form>
-          <button
-            type="button"
-            class="btn btn-primary my-2"
-            data-bs-toggle="modal"
-            data-bs-target="#addModel"
-          >
-            新增單筆資料
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger removeButton my-2"
-            id="button"
-            data-bs-toggle="modal"
-            data-bs-target="#removeModel"
-            disabled
-          >
-            刪除單筆資料
-          </button>
-          <button
-            type="button"
-            class="btn btn-warning updateButton my-2"
-            id="button"
-            data-bs-toggle="modal"
-            data-bs-target="#updateModel"
-            disabled
-          >
-            修改單筆資料
-          </button>
-          <hr />
-          <div>
-            <button
-              class="btn btn-secondary"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseExample"
-              aria-expanded="false"
-              aria-controls="collapseExample"
-            >
-              複合式查詢
-            </button>
-            <div class="collapse" id="collapseExample">
-              <div class="card card-body">
-                <div class="row">
-                  <div class="col-2">
-                    <label>區域 :</label>
-                    <select
-                      class="form-select areaSelect"
-                      aria-label="Default select example"
-                    >
-                      <option value="" selected>請選擇</option>
-                      <option value="西屯區">西屯區</option>
-                      <option value="北屯區">北屯區</option>
-                      <option value="北區">北區</option>
-                      <option value="中區">中區</option>
-                    </select>
-                  </div>
-                  <div class="col-2">
-                    <label>類別 :</label>
-                    <select
-                      class="form-select typeSelect"
-                      aria-label="Default select example"
-                    >
-                      <option value="" selected>請選擇</option>
-                      <option value="3C產品">3C產品</option>
-                      <option value="家用家具">家用家具</option>
-                      <option value="日常用品">日常用品</option>
-                      <option value="運動用品">運動用品</option>
-                      <option value="食物">食物</option>
-                    </select>
-                  </div>
-                  <div class="col-2">
-                    <label>價格低於 :</label>
-                    <select
-                      class="form-select priceSelect"
-                      aria-label="Default select example"
-                    >
-                      <option value="" selected>請選擇</option>
-                      <option value="400">400</option>
-                      <option value="600">600</option>
-                      <option value="800">800</option>
-                      <option value="1000">1000</option>
-                    </select>
-                  </div>
-                  <div class="w-100"></div>
-                  <div class="col-12 mt-2">
-                    <button type="button" class="btn btn-danger clearQuery">
-                      清空查詢
+        <div class="col-12 col-xl-6 d-flex flex-column">
+            <!-- Button trigger modal -->
+            <div>
+                <button type="button" class="btn btn-secondary downloadOds my-2" id="button">
+                    <i class="bi bi-download"></i>下載定位點資訊(.ods檔案)
+                </button>
+                <button type="button" class="btn btn-secondary downloadShp my-2" id="button">
+                    <i class="bi bi-download"></i>下載定位點資訊(.shp檔案)
+                </button>
+                <button type="button" class="btn btn-secondary downloadKml my-2" id="button">
+                    <i class="bi bi-download"></i>下載定位點資訊(.kml檔案)
+                </button>
+                <form enctype="multipart/form-data" method="post">
+                    <div class="input-group">
+                        <input type="file" class="form-control file-uploader" id="inputGroupFile04" multiple="multiple"
+                            data-target="file-uploader" aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
+                        <button type="submit" class="btn btn-primary">上傳</button>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#addModel">
+                    新增單筆資料
+                </button>
+                <button type="button" class="btn btn-danger removeButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#removeModel" disabled>
+                    刪除單筆資料
+                </button>
+                <button type="button" class="btn btn-warning updateButton my-2" id="button" data-bs-toggle="modal"
+                    data-bs-target="#updateModel" disabled>
+                    修改單筆資料
+                </button>
+                <hr />
+                <div>
+                    <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        複合式查詢
                     </button>
-                    <button type="button" class="btn btn-primary complexQuery">
-                      查詢
-                    </button>
-                  </div>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                            <div class="row">
+                                <div class="col-2">
+                                    <label>區域 :</label>
+                                    <select class="form-select areaSelect" aria-label="Default select example">
+                                        <option value="default" selected>請選擇</option>
+                                        <option value="西屯區">西屯區</option>
+                                        <option value="北屯區">北屯區</option>
+                                        <option value="北區">北區</option>
+                                        <option value="中區">中區</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <label>類別 :</label>
+                                    <select class="form-select typeSelect" aria-label="Default select example">
+                                        <option value="default" selected>請選擇</option>
+                                        <option value="3C產品">3C產品</option>
+                                        <option value="家用家具">家用家具</option>
+                                        <option value="日常用品">日常用品</option>
+                                        <option value="運動用品">運動用品</option>
+                                        <option value="食物">食物</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <label>價格低於 :</label>
+                                    <select class="form-select priceSelect" aria-label="Default select example">
+                                        <option value="0" selected>請選擇</option>
+                                        <option value="400">400</option>
+                                        <option value="600">600</option>
+                                        <option value="800">800</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-12 mt-2">
+                                    <button type="button" class="btn btn-danger clearQuery">
+                                        清空查詢
+                                    </button>
+                                    <button type="button" class="btn btn-primary complexQuery">
+                                        查詢
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="mt-2">
-          <table id="table_id_example" class="table table-striped">
-            <thead>
-              <tr>
-                <th>訂購類別</th>
-                <th>價格</th>
-                <th>電話</th>
-                <th>地址</th>
-                <th>座標</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <!-- Modal -->
-        <!-- 新增Modal -->
-        <div
-          class="modal fade"
-          id="addModel"
-          tabindex="-1"
-          aria-labelledby="addModelLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <div class="row align-items-center">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >訂購類別</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="addCategory form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >價格</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="addPrice form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >電話</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="addPhone form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >地址</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="addAddress form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >座標 x,y</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="addLocation form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  取消
-                </button>
-                <button type="button" class="btn btn-primary" id="addRow">
-                  確定
-                </button>
-              </div>
+            <div class="mt-2">
+                <table id="table_id_example" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>訂購類別</th>
+                            <th>價格</th>
+                            <th>電話</th>
+                            <th>地址</th>
+                            <th>座標</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-          </div>
-        </div>
 
-        <div
-          class="modal fade"
-          id="removeModel"
-          tabindex="-1"
-          aria-labelledby="removeModel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">刪除資料</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">確定刪除資料嗎</div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  取消
-                </button>
-                <button type="button" class="btn btn-primary" id="removeRow">
-                  確定
-                </button>
-              </div>
+            <!-- Modal -->
+            <!-- 新增Modal -->
+            <div class="modal fade" id="addModel" tabindex="-1" aria-labelledby="addModelLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">訂購類別</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addCategory form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">價格</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addPrice form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addPhone form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addAddress form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="addLocation form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                取消
+                            </button>
+                            <button type="button" class="btn btn-primary" id="addRow">
+                                確定
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <div
-          class="modal fade"
-          id="updateModel"
-          tabindex="-1"
-          aria-labelledby="updateModel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">修改資料</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <div class="row align-items-center">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >訂購類別</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="updateCategory form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
+            <div class="modal fade" id="removeModel" tabindex="-1" aria-labelledby="removeModel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">刪除資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">確定刪除資料嗎</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                取消
+                            </button>
+                            <button type="button" class="btn btn-primary" id="removeRow">
+                                確定
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >價格</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="updatePrice form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >電話</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="updatePhone form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >地址</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="updateAddress form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center mt-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >座標 x,y</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="updateLocation form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  取消
-                </button>
-                <button type="button" class="btn btn-primary" id="updateRow">
-                  確定
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- 新增 Point Modal -->
-        <div class="modal fade" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content pointAddModel">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
-              </div>
-              <div class="modal-body">
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">訂購類別</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="popCategory form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">價格</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="popPrice form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">電話</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="popPhone form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">地址</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      class="popAddress form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >座標 x,y</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popLocation form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <div class="modal fade" id="updateModel" tabindex="-1" aria-labelledby="updateModel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">修改資料</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">訂購類別</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateCategory form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">價格</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updatePrice form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updatePhone form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateAddress form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center mt-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="updateLocation form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Point 訊息 Modal -->
-        <div class="modal fade" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content pointInfoModel">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">資料</h5>
-              </div>
-              <div class="modal-body">
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">訂購類別</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popCategory form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                取消
+                            </button>
+                            <button type="button" class="btn btn-primary" id="updateRow">
+                                確定
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">價格</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popPrice form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">電話</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popPhone form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label class="col-form-label">地址</label>
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popAddress form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-                <div class="row align-items-center my-2">
-                  <div class="col-3 text-end">
-                    <label for="inputPassword6" class="col-form-label"
-                      >座標 x,y</label
-                    >
-                  </div>
-                  <div class="col-7">
-                    <input
-                      disabled
-                      class="popLocation form-control"
-                      aria-describedby="passwordHelpInline"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+
+            <!-- 新增 Point Modal -->
+            <div class="modal fade" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content pointAddModel">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">新增資料</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">訂購類別</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popCategory form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">價格</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popPrice form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popPhone form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input class="popAddress form-control" aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popLocation form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Point 訊息 Modal -->
+            <div class="modal fade" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content pointInfoModel">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">資料</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">訂購類別</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popCategory form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">價格</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popPrice form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">電話</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popPhone form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label class="col-form-label">地址</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popAddress form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                            <div class="row align-items-center my-2">
+                                <div class="col-3 text-end">
+                                    <label for="inputPassword6" class="col-form-label">座標 x,y</label>
+                                </div>
+                                <div class="col-7">
+                                    <input disabled class="popLocation form-control"
+                                        aria-describedby="passwordHelpInline" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <!-- map -->
-      <div class="col-12 col-xl-6 d-flex flex-column">
-        <div class="mb-2">
-          <!-- <div class="btn">
+        <!-- map -->
+        <div class="col-12 col-xl-6 d-flex flex-column">
+            <div class="mb-2">
+                <!-- <div class="btn">
             <button
               class="btn btn-success"
               data-id="WMTS"
@@ -613,824 +407,899 @@
               WMTS
             </button>
           </div> -->
-          <!-- 切換圖層下拉式選單 -->
-          <div class="btn-group my-1">
-            <button type="button" class="btn btn-secondary layerName">
-              底圖切換
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu dropdown-layer">
-              <li data-id="EMAP">
-                <a class="dropdown-item" href="#">臺灣通用電子地圖</a>
-              </li>
-              <li data-id="PHOTO2">
-                <a class="dropdown-item" href="#"> 正射影像圖</a>
-              </li>
-            </ul>
-          </div>
-          <div class="btn-group my-1">
-            <button type="button" class="btn btn-secondary layerName">
-              圖層套疊
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <span class="visually-hidden">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu dropdown-layer">
-              <li data-id="CITY">
-                <a class="dropdown-item" href="#">縣市界</a>
-              </li>
-              <li data-id="TOWN">
-                <a class="dropdown-item" href="#">鄉鎮區界</a>
-              </li>
-            </ul>
-          </div>
-          <button type="button" class="btn btn-success defaultType">
-            繪製點位
-          </button>
-          <button type="button" class="btn btn-success pointInfo">
-            查看點位
-          </button>
+                <!-- 切換圖層下拉式選單 -->
+                <div class="btn-group my-1">
+                    <button type="button" class="btn btn-secondary layerName">
+                        底圖切換
+                    </button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-baselayer">
+                        <li data-id="EMAP">
+                            <a class="dropdown-item" href="#">臺灣通用電子地圖</a>
+                        </li>
+                        <li data-id="PHOTO2">
+                            <a class="dropdown-item" href="#"> 正射影像圖</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn-group my-1">
+                    <button type="button" class="btn btn-secondary layerName">
+                        圖層套疊
+                    </button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-layernest">
+                        <li data-id="CITY">
+                            <a class="dropdown-item" href="#">縣市界</a>
+                        </li>
+                        <li data-id="TOWN">
+                            <a class="dropdown-item" href="#">鄉鎮區界</a>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-success defaultType">
+                    繪製點位
+                </button>
+                <button type="button" class="btn btn-success pointInfo">
+                    查看點位
+                </button>
+            </div>
+            <div id="map" class="map"></div>
+            <label>
+                Layer opacity
+                <input id="opacity-input" type="range" min="0" max="1" step="0.01" value="1" />
+                <span id="opacity-output"></span>
+            </label>
+            <div id="popup" class="ol-popup">
+                <div class="ol-popup-content">
+                    <button type="button" class="btn btn-danger popup-closer">
+                        取消
+                    </button>
+                    <button type="button" class="btn btn-primary popup-sure mx-2">
+                        確定
+                    </button>
+                    <button type="button" class="btn btn-primary popup-sure-info mx-2">
+                        確定
+                    </button>
+                </div>
+                <div id="popup-content"></div>
+            </div>
         </div>
-        <div id="map" class="map"></div>
-        <label>
-          Layer opacity
-          <input
-            id="opacity-input"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value="1"
-          />
-          <span id="opacity-output"></span>
-        </label>
-        <div id="popup" class="ol-popup">
-          <div class="ol-popup-content">
-            <button type="button" class="btn btn-danger popup-closer">
-              取消
-            </button>
-            <button type="button" class="btn btn-primary popup-sure mx-2">
-              確定
-            </button>
-            <button type="button" class="btn btn-primary popup-sure-info mx-2">
-              確定
-            </button>
-          </div>
-          <div id="popup-content"></div>
-        </div>
-      </div>
     </div>
     <script>
-      // var layerWMS;
-      var layerWMTS;
-      var draw, snap, url;
-      var basemap = 0;
-      var features;
-      const container = $("#popup")[0];
-      const pointAddModel = $(".pointAddModel").html();
-      const pointInfoModel = $(".pointInfoModel").html();
-      const table = $("#table_id_example").DataTable({
-        select: {
-          style: "multi",
-        },
-      });
+        // var layerWMS;
+        var layerWMTS;
+        var draw, snap, url;
+        var basemap = 0;
+        var features;
+        const container = $("#popup")[0];
+        const pointAddModel = $(".pointAddModel").html();
+        const pointInfoModel = $(".pointInfoModel").html();
+        const table = $("#table_id_example").DataTable({
+            select: {
+                style: "multi",
+            },
+        });
 
-      const format = new ol.format.WKT();
-      const projection = ol.proj.get("EPSG:3857");
-      const styleCache = {};
-      const vector = new ol.source.Vector();
-      const vSource = new ol.source.Vector();
-      // var host = "http://192.168.5.79/GISWeb/BackEndService";
-      // var host1 = "http://192.168.5.79/GISWeb/OdsExport";
-      var host = "https://localhost:44329";
-      var host1 = "https://localhost:44370";
+        const format = new ol.format.WKT();
+        const projection = ol.proj.get("EPSG:3857");
+        const styleCache = {};
+        const vector = new ol.source.Vector();
+        const vSource = new ol.source.Vector();
+        // var host = "http://192.168.5.79/GISWeb/BackEndService";
+        // var host1 = "http://192.168.5.79/GISWeb/OdsExport";
+        var host = "https://localhost:44329";
+        var host1 = "https://localhost:44370";
 
-      var point = [];
+        var point = [];
 
-      let dynamicStyle = {
-        point: new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 10,
-            fill: new ol.style.Fill({
-              color: [247, 5, 25, 1],
+        let dynamicStyle = {
+            point: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 10,
+                    fill: new ol.style.Fill({
+                        color: [247, 5, 25, 1],
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: [5, 74, 247, 1],
+                        width: 5,
+                    }),
+                }),
             }),
-            stroke: new ol.style.Stroke({
-              color: [5, 74, 247, 1],
-              width: 5,
-            }),
-          }),
-        }),
-      };
-
-      // 初始化中心位置
-      const view = new ol.View({
-        center: [13434643.11663889, 2774262.446111564],
-        zoom: 8,
-        projection,
-      });
-
-      // 彈出資訊
-      const overlay = new ol.Overlay({
-        element: container,
-        autoPan: {
-          animation: {
-            duration: 450,
-          },
-        },
-      });
-
-      // 叢集
-      const clusterSource = new ol.source.Cluster({
-        distance: 40,
-        minDistance: 20,
-        source: vSource,
-      });
-
-      const clusters = new ol.layer.Vector({
-        source: clusterSource,
-        style: function (feature) {
-          let style;
-          let size = feature.get("features").length;
-          if (
-            point.includes(feature.get("features")[0].get("id")) &&
-            size == 1
-          ) {
-            style = new ol.style.Style({
-              image: new ol.style.Circle({
-                radius: 10,
-                stroke: new ol.style.Stroke({
-                  color: "#fff",
-                }),
-                fill: new ol.style.Fill({
-                  color: "#930000",
-                }),
-              }),
-              text: new ol.style.Text({
-                text: size.toString(),
-                fill: new ol.style.Fill({
-                  color: "#fff",
-                }),
-              }),
-            });
-          } else {
-            style = new ol.style.Style({
-              image: new ol.style.Circle({
-                radius: 10,
-                stroke: new ol.style.Stroke({
-                  color: "#fff",
-                }),
-                fill: new ol.style.Fill({
-                  color: "#33ccb3",
-                }),
-              }),
-              text: new ol.style.Text({
-                text: size.toString(),
-                fill: new ol.style.Fill({
-                  color: "#fff",
-                }),
-              }),
-            });
-          }
-          return style;
-        },
-      });
-
-      // 地圖
-      const map = new ol.Map({
-        target: "map",
-        layers: [
-          new ol.layer.Tile({
-            source: new ol.source.OSM(),
-          }),
-          clusters,
-          new ol.layer.Vector({
-            source: vector,
-            style: {
-              "fill-color": "rgba(255, 255, 255, 0.2)",
-              "stroke-color": "#0072E3",
-              "stroke-width": 2,
-              "circle-radius": 7,
-              "circle-fill-color": "#0072E3",
-            },
-          }),
-        ],
-        overlays: [overlay],
-        view: view,
-      });
-
-      // WMTS
-      layerWMTS = new ol.layer.Tile({
-        source: new ol.source.XYZ({
-          url: "https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}",
-          tileUrlFunction: function (tileCoord) {
-            var z = tileCoord[0];
-            var x = tileCoord[1];
-            var y = tileCoord[2];
-            return "https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}"
-              .replace("{z}", z)
-              .replace("{y}", y)
-              .replace("{x}", x);
-          },
-        }),
-      });
-
-      // 獲取資料
-      const dataInit = () => {
-        try {
-          const response = fetch(`${host}/api/Restaurant/get/info`, {
-            headers: {
-              "content-type": "application/json",
-            },
-            method: "Get",
-          })
-            .then((res) => {
-              return res.json();
-            })
-            .then((result) => {
-              result.forEach((element) => {
-                let newTable = table.row
-                  .add([
-                    element.category,
-                    element.price,
-                    element.phone,
-                    element.address,
-                    `${element.location.coordinates[0]},${element.location.coordinates[1]}`,
-                  ])
-                  .draw(false)
-                  .node();
-                $(newTable).attr("data-id", element.id);
-                var data = new ol.Feature({
-                  id: element.id,
-                  category: element.Category,
-                  price: element.price,
-                  phone: element.phone,
-                  address: element.address,
-                  geometry: new ol.geom.Point(
-                    ol.proj.transform(
-                      [
-                        element.location.coordinates[0],
-                        element.location.coordinates[1],
-                      ],
-                      "EPSG:4326",
-                      "EPSG:3857"
-                    )
-                  ),
-                });
-                vSource.addFeature(data);
-              });
-            });
-        } catch (error) {
-          console.log(`Error: ${error}`);
-        }
-      };
-
-      const uploadOdsApi = (formData) => {
-        return fetch(`${host1}/post/uploadOds`, {
-          body: formData,
-          method: "POST",
-        });
-      };
-
-      const uploadShpApi = (formData) => {
-        return fetch(`${host1}/post/uploadShp`, {
-          body: formData,
-          method: "POST",
-        });
-      };
-
-      const uploadKmlApi = (formData) => {
-        return fetch(`${host1}/post/uploadKml`, {
-          body: formData,
-          method: "POST",
-        });
-      };
-
-      const downloadOdsApi = (formData) => {
-        return fetch(`${host1}/get/downloadOds`, {
-          method: "GET",
-        })
-          .then((response) => response.blob())
-          .then((blob) => {
-            var url = window.URL.createObjectURL(blob); // create url from blob
-            var fileLink = document.createElement("a"); // create link for file
-            fileLink.href = url;
-            fileLink.download = "New.ods"; // download filename
-            document.body.appendChild(fileLink); // append file link to download
-            fileLink.click();
-            fileLink.remove(); // remove file link after click
-          })
-          .catch((error) => {
-            // Handle error here.
-          });
-      };
-
-      const downloadShpApi = (formData) => {
-        return fetch(`${host1}/get/downloadShp`, {
-          method: "GET",
-        })
-          .then((response) => response.blob())
-          .then((blob) => {
-            var url = window.URL.createObjectURL(blob); // create url from blob
-            var fileLink = document.createElement("a"); // create link for file
-            fileLink.href = url;
-            fileLink.download = "Shapefile.shp"; // download filename
-            document.body.appendChild(fileLink); // append file link to download
-            fileLink.click();
-            fileLink.remove(); // remove file link after click
-          })
-          .catch((error) => {
-            // Handle error here.
-          });
-      };
-
-      const downloadKmlApi = (formData) => {
-        return fetch(`${host1}/get/downloadKml`, {
-          method: "GET",
-        })
-          .then((response) => response.blob())
-          .then((blob) => {
-            var url = window.URL.createObjectURL(blob); // create url from blob
-            var fileLink = document.createElement("a"); // create link for file
-            fileLink.href = url;
-            fileLink.download = "New.kml"; // download filename
-            document.body.appendChild(fileLink); // append file link to download
-            fileLink.click();
-            fileLink.remove(); // remove file link after click
-          })
-          .catch((error) => {
-            // Handle error here.
-          });
-      };
-
-      const refreshTable = () => {
-        table.clear().draw();
-      };
-
-      const init = () => {
-        // layerWMS.getSource().refresh();
-        layerWMTS.getSource().refresh();
-      };
-
-      const changeLayer = (layer) => {
-        layerWMTS
-          .getSource()
-          .setUrl(
-            `https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`
-          );
-        // layerWMS.getSource().updateParams({ 'LAYERS': layer });
-      };
-
-      const switchWMTS = () => {
-        // layerWMS.setVisible(false);
-        layerWMTS.setVisible(true);
-      };
-
-      const switchWMS = () => {
-        layerWMTS.setVisible(false);
-        // layerWMS.setVisible(true);
-      };
-
-      const update = () => {
-        const opacity = parseFloat($("#opacity-input").val());
-        layerWMTS.setOpacity(opacity);
-        $("#opacity-output").val(opacity.toFixed(2));
-      };
-
-      const refreshVector = () => {
-        vSource.clear(true);
-        vector.clear(true);
-      };
-
-      function addInteraction() {
-        draw = new ol.interaction.Draw({
-          source: vector,
-          type: none,
-        });
-        map.addInteraction(draw);
-        snap = new ol.interaction.Snap({ source: vSource });
-        map.addInteraction(snap);
-      }
-
-      // listener
-      // 上傳 file
-      $("form").on("submit", async function (event) {
-        event.preventDefault();
-        if ($(".file-uploader")[0].files.length > 0) {
-          const formData = new FormData();
-          let fileName = $(".file-uploader")[0].files[0].name;
-          let strAry = fileName.split(".");
-          let fileExtension = strAry[1];
-          formData.append("file", $(".file-uploader")[0].files[0]);
-          try {
-            switch (fileExtension) {
-              case "ods":
-                await uploadOdsApi(formData);
-                break;
-              case "shp":
-                await uploadShpApi(formData);
-                break;
-              case "kml":
-                await uploadKmlApi(formData);
-                break;
-              default:
-                break;
-            }
-          } catch (e) {
-            throw new Error("Oops,", e);
-          }
-          refreshTable();
-          dataInit();
-        }
-      });
-
-      $(".downloadOds").on("click", async function () {
-        await downloadOdsApi();
-      });
-
-      $(".downloadShp").on("click", async function () {
-        await downloadShpApi();
-      });
-
-      $(".downloadKml").on("click", async function () {
-        await downloadKmlApi();
-      });
-
-      // map
-      // 產生popup圖層
-      map.on("singleclick", function (evt) {
-        if ($(".pointInfo").hasClass("selectedInfo")) {
-          map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-            // 查看點位
-            if (feature && feature.C.features.length == 1) {
-              const coordinate = evt.coordinate;
-              let lonLat = ol.proj.toLonLat(coordinate);
-              $(".popup-sure").hide();
-              $(".popup-closer").hide();
-              $(".popup-sure-info").show();
-              $("#popup-content").html(pointInfoModel);
-              $("#popup-content .popCategory").val(
-                feature.C.features[0].get("Category")
-              );
-              $("#popup-content .popPrice").val(
-                feature.C.features[0].get("Price")
-              );
-              $("#popup-content .popPhone").val(
-                feature.C.features[0].get("phone")
-              );
-              $("#popup-content .popAddress").val(
-                feature.C.features[0].get("address")
-              );
-              $("#popup-content .popLocation").val(lonLat);
-              overlay.setPosition(coordinate);
-            }
-          });
-        } else {
-          const features = vSource.getFeatures();
-          const coordinate = evt.coordinate;
-          let lonLat = ol.proj.toLonLat(coordinate);
-          map.getTargetElement().style.pointerEvents = "none";
-          $(".popup-sure").show();
-          $(".popup-closer").show();
-          $(".popup-sure-info").hide();
-          $("#popup-content").html(pointAddModel);
-          $("#popup-content .popLocation").val(lonLat);
-          overlay.setPosition(coordinate);
-        }
-      });
-
-      $(".pointInfo").on("click", function () {
-        $(".pointInfo").addClass("selectedInfo");
-        map.removeInteraction(draw);
-        map.removeInteraction(snap);
-      });
-
-      // 座標
-      // 確定popup圖層及新增Point
-      $(".popup-sure").on("click", async function () {
-        let location = $("#popup-content .popLocation").val();
-        let category = $("#popup-content .popCategory").val();
-        let price = $("#popup-content .popPrice").val();
-        let phone = $("#popup-content .popPhone").val();
-        let address = $("#popup-content .popAddress").val();
-        if ([category, price, address, phone, location].includes("")) {
-          alert("值不能為空");
-        } else {
-          map.getTargetElement().style.pointerEvents = "auto";
-          //切割 Location 取 Lat、Longitude
-          let strAry = location.split(",");
-          let Lat = parseFloat(strAry[0]);
-          let Longitude = parseFloat(strAry[1]);
-          const body = {
-            category: Category,
-            price: price,
-            address: address,
-            phone: phone,
-            lat: Lat,
-            longitude: Longitude,
-          };
-          try {
-            const api = await fetch(`${host}/api/Restaurant/post/info`, {
-              mode: "cors",
-              body: JSON.stringify(body),
-              headers: {
-                "content-type": "application/json",
-              },
-              method: "POST",
-            });
-          } catch (e) {
-            throw new Error("Oops,", e);
-          } finally {
-            refreshVector();
-            refreshTable();
-            dataInit();
-            overlay.setPosition(undefined);
-          }
-        }
-      });
-
-      // 取消popup圖層及Point
-      $(".popup-closer").on("click", function (e) {
-        map.getTargetElement().style.pointerEvents = "auto";
-        let features = vector.getFeatures();
-        let lastFeature = features[features.length - 1];
-        vector.removeFeature(lastFeature);
-        overlay.setPosition(undefined);
-        $(".popup-closer").blur();
-        return false;
-      });
-
-      $(".popup-sure-info").on("click", function () {
-        overlay.setPosition(undefined);
-      });
-
-      $(".dropdown-layer").on("click", "li", function (e) {
-        let layer = e.currentTarget.getAttribute("data-id");
-        init();
-        changeLayer(layer);
-        $(".layerCategory").html(e.target.innerHTML);
-        if ($(this).hasClass("selectedLayer")) {
-        } else {
-          $(".dropdown-layer li").removeClass("selectedLayer");
-          $(this).addClass("selectedLayer");
-        }
-      });
-
-      $(".defaultType").on("click", function (e) {
-        $(".pointInfo").removeClass("selectedInfo");
-        $(".defaultType").html(e.target.innerHTML);
-        map.removeInteraction(draw);
-        map.removeInteraction(snap);
-        addInteraction();
-      });
-
-      $("#opacity-input").on("input", update);
-
-      // table
-      $("#table_id_example tbody").on("click", "tr", async function (e) {
-        $(this).toggleClass("selected");
-        switch ($(".selected").length) {
-          case 0:
-            $(".removeButton").attr("disabled", true);
-            $(".updateButton").attr("disabled", true);
-            break;
-          case 1:
-            $(".removeButton").attr("disabled", false);
-            $(".updateButton").attr("disabled", false);
-            break;
-          default:
-            $(".removeButton").attr("disabled", false);
-            $(".updateButton").attr("disabled", true);
-            break;
-        }
-        if ($("#table_id_example tbody tr").hasClass("selected")) {
-          let geometryArr = $(e.currentTarget)
-            .find("td:eq(" + 4 + ")")
-            .html();
-          let geometry = geometryArr.split(",");
-          let location = ol.proj.fromLonLat([
-            parseFloat(geometry[0]),
-            parseFloat(geometry[1]),
-          ]);
-          point.push(parseInt(e.currentTarget.getAttribute("data-id")));
-          view.animate({
-            center: [location[0], location[1]],
-            duration: 2000,
-            zoom: 12,
-          });
-        }
-      });
-
-      // 行新增
-      $("#addRow").on("click", async function () {
-        let category = $(".addCategory").val();
-        let price = $(".addPrice").val();
-        let address = $(".addAddress").val();
-        let phone = $(".addPhone").val();
-        let location = $(".addLocation").val();
-        if ([Category, price, address, phone, location].includes("")) {
-          alert("值不能為空");
-        } else {
-          let strAry = location.split(",");
-          let Lat = parseFloat(strAry[0]);
-          let Longitude = parseFloat(strAry[1]);
-          let body = {
-            category: $(".addCategory").val(),
-            price: $(".addPrice").val(),
-            address: $(".addAddress").val(),
-            phone: $(".addPhone").val(),
-            lat: Lat,
-            longitude: Longitude,
-          };
-          try {
-            const api = await fetch(`${host}/api/Restaurant/post/info`, {
-              mode: "cors",
-              body: JSON.stringify(body),
-              headers: {
-                "content-type": "application/json",
-              },
-              method: "POST",
-            });
-          } catch (e) {
-            throw new Error("Oops,", e);
-          } finally {
-            refreshVector();
-            refreshTable();
-            dataInit();
-            $(".addCategory").val("");
-            $(".addpPrice").val("");
-            $(".addAddress").val("");
-            $(".addPhone").val("");
-            $(".addLocation").val("");
-            $("#addModel").modal("toggle");
-          }
-        }
-      });
-
-      //行刪除
-      $("#removeRow").click(async function () {
-        let i = 0;
-        let ids;
-        let location;
-        let idArray = [];
-        let selectedData = table.rows(".selected").nodes();
-        let selectedLength = table.rows(".selected").nodes().length;
-        for (let index = 0; index < selectedLength; index++) {
-          idArray.push($(selectedData[index]).attr("data-id"));
-        }
-        ids = idArray.join(",");
-
-        try {
-          const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
-            mode: "cors",
-            headers: {
-              "content-type": "application/json",
-            },
-            method: "DELETE",
-          });
-        } catch (e) {
-          throw new Error("Oops,", e);
-        } finally {
-          table.row(".selected").remove().draw(false);
-          $("#removeModel").modal("toggle");
-          $(".updateButton").attr("disabled", true);
-          refreshVector();
-          refreshTable();
-          dataInit();
-        }
-      });
-
-      //行修改
-      $(".updateButton").click(function () {
-        let data = table.row(".selected").node();
-        $(".updateCategory").val(
-          $(data)
-            .find("td:eq(" + 0 + ")")
-            .html()
-        );
-        $(".updatePrice").val(
-          $(data)
-            .find("td:eq(" + 1 + ")")
-            .html()
-        );
-        $(".updatePhone").val(
-          $(data)
-            .find("td:eq(" + 2 + ")")
-            .html()
-        );
-        $(".updateAddress").val(
-          $(data)
-            .find("td:eq(" + 3 + ")")
-            .html()
-        );
-        $(".updateLocation").val(
-          $(data)
-            .find("td:eq(" + 4 + ")")
-            .html()
-        );
-      });
-
-      $("#updateRow").click(async function () {
-        let i = 0;
-        let data = table.row(".selected").node();
-        let beforeAry = $(data)
-          .find("td:eq(" + 4 + ")")
-          .html()
-          .split(",");
-        let location = $(".updateLocation").val();
-        let afterAry = location.split(",");
-        let id = $(data).attr("data-id");
-        let body = {
-          category: $(".updateCategory").val(),
-          price: $(".updatePrice").val(),
-          address: $(".updateAddress").val(),
-          phone: $(".updatePhone").val(),
-          lat: parseFloat(afterAry[0]),
-          longitude: parseFloat(afterAry[1]),
         };
-        try {
-          const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
-            body: JSON.stringify(body),
-            headers: {
-              "content-type": "application/json",
+
+        // 初始化中心位置
+        const view = new ol.View({
+            center: [13434643.11663889, 2774262.446111564],
+            zoom: 8,
+            projection,
+        });
+
+        // 彈出資訊
+        const overlay = new ol.Overlay({
+            element: container,
+            autoPan: {
+                animation: {
+                    duration: 450,
+                },
             },
-            method: "PUT",
-          });
-        } catch (e) {
-          throw new Error("Oops,", e);
-        } finally {
-          $("#updateModel").modal("toggle");
-          refreshVector();
-          refreshTable();
-          dataInit();
-        }
-      });
+        });
 
-      $(".clearQuery").on("click", function () {
-        $(".areaSelect").val("請選擇");
-        $(".typeSelect").val("請選擇");
-        $(".priceSelect").val("請選擇");
-      });
+        // 叢集
+        const clusterSource = new ol.source.Cluster({
+            distance: 40,
+            minDistance: 20,
+            source: vSource,
+        });
 
-      //複合式查詢
-      $(".complexQuery").on("click", async function () {
-        let queryArray = [];
-        let params;
-        const queruLength = $(".form-select").length;
-        for (let i = 0; i < 3; i++) {
-          if ($(".form-select").val() != "") {
-            queryArray.push($(".form-select").eq(i).val());
-          }
-        }
-        params = queryArray.join(",");
-        try {
-          const response = fetch(
-            `${host}/api/Restaurant/get/CompoundQueryData/${params}`,
-            {
-              headers: {
-                "content-type": "application/json",
-              },
-              method: "Get",
+        const clusters = new ol.layer.Vector({
+            source: clusterSource,
+            style: function (feature) {
+                let style;
+                let size = feature.get("features").length;
+                if (
+                    point.includes(feature.get("features")[0].get("id")) &&
+                    size == 1
+                ) {
+                    style = new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 10,
+                            stroke: new ol.style.Stroke({
+                                color: "#fff",
+                            }),
+                            fill: new ol.style.Fill({
+                                color: "#930000",
+                            }),
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: "#fff",
+                            }),
+                        }),
+                    });
+                } else {
+                    style = new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 10,
+                            stroke: new ol.style.Stroke({
+                                color: "#fff",
+                            }),
+                            fill: new ol.style.Fill({
+                                color: "#33ccb3",
+                            }),
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: "#fff",
+                            }),
+                        }),
+                    });
+                }
+                return style;
+            },
+        });
+
+        // 地圖
+        const map = new ol.Map({
+            target: "map",
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM(),
+                }),
+                clusters,
+                new ol.layer.Vector({
+                    source: vector,
+                    style: {
+                        "fill-color": "rgba(255, 255, 255, 0.2)",
+                        "stroke-color": "#0072E3",
+                        "stroke-width": 2,
+                        "circle-radius": 7,
+                        "circle-fill-color": "#0072E3",
+                    },
+                }),
+            ],
+            overlays: [overlay],
+            view: view,
+        });
+
+        // 通用電子地圖
+        layerWMTS = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: "https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}",
+                tileUrlFunction: function (tileCoord) {
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+                    return "https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}"
+                        .replace("{z}", z)
+                        .replace("{y}", y)
+                        .replace("{x}", x);
+                },
+            }),
+        });
+
+        // 正射影像圖
+        layerPHOTO2 = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: "https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}",
+                tileUrlFunction: function (tileCoord) {
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+                    return "https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}"
+                        .replace("{z}", z)
+                        .replace("{y}", y)
+                        .replace("{x}", x);
+                },
+            }),
+        });
+
+        // 縣市界 
+        layerCITY = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: "https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}",
+                tileUrlFunction: function (tileCoord) {
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+                    return "https://wmts.nlsc.gov.tw/wmts/CITY/default/GoogleMapsCompatible/{z}/{y}/{x}"
+                        .replace("{z}", z)
+                        .replace("{y}", y)
+                        .replace("{x}", x);
+                },
+            }),
+        });
+
+        // 鄉鎮區界 
+        layerTOWN = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: "https://wmts.nlsc.gov.tw/wmts/TOWN/default/GoogleMapsCompatible/{z}/{y}/{x}",
+                tileUrlFunction: function (tileCoord) {
+                    var z = tileCoord[0];
+                    var x = tileCoord[1];
+                    var y = tileCoord[2];
+                    return "https://wmts.nlsc.gov.tw/wmts/TOWN/default/GoogleMapsCompatible/{z}/{y}/{x}"
+                        .replace("{z}", z)
+                        .replace("{y}", y)
+                        .replace("{x}", x);
+                },
+            }),
+        });
+
+        // 獲取資料
+        const dataInit = () => {
+            try {
+                const response = fetch(`${host}/api/Restaurant/get/info`, {
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    method: "Get",
+                })
+                    .then((res) => {
+                        return res.json();
+                    })
+                    .then((result) => {
+                        result.forEach((element) => {
+                            let newTable = table.row
+                                .add([
+                                    element.category,
+                                    element.price,
+                                    element.phone,
+                                    element.address,
+                                    `${element.location.coordinates[0]},${element.location.coordinates[1]}`,
+                                ])
+                                .draw(false)
+                                .node();
+                            $(newTable).attr("data-id", element.id);
+                            var data = new ol.Feature({
+                                id: element.id,
+                                category: element.Category,
+                                price: parseInt(element.price),
+                                phone: element.phone,
+                                address: element.address,
+                                geometry: new ol.geom.Point(
+                                    ol.proj.transform(
+                                        [
+                                            element.location.coordinates[0],
+                                            element.location.coordinates[1],
+                                        ],
+                                        "EPSG:4326",
+                                        "EPSG:3857"
+                                    )
+                                ),
+                            });
+                            vSource.addFeature(data);
+                        });
+                    });
+            } catch (error) {
+                console.log(`Error: ${error}`);
             }
-          )
-            .then((res) => {
-              return res.json();
-            })
-            .then((result) => {
-              result.forEach((element) => {
-                console.log(element);
-              });
-            });
-        } catch (error) {
-          console.log(`Error: ${error}`);
-        }
-      });
+        };
 
-      map.addLayer(layerWMTS);
-      addInteraction();
-      dataInit();
+        const uploadOdsApi = (formData) => {
+            return fetch(`${host1}/post/uploadOds`, {
+                body: formData,
+                method: "POST",
+            });
+        };
+
+        const uploadShpApi = (formData) => {
+            return fetch(`${host1}/post/uploadShp`, {
+                body: formData,
+                method: "POST",
+            });
+        };
+
+        const uploadKmlApi = (formData) => {
+            return fetch(`${host1}/post/uploadKml`, {
+                body: formData,
+                method: "POST",
+            });
+        };
+
+        const downloadOdsApi = (formData) => {
+            return fetch(`${host1}/get/downloadOds`, {
+                method: "GET",
+            })
+                .then((response) => response.blob())
+                .then((blob) => {
+                    var url = window.URL.createObjectURL(blob); // create url from blob
+                    var fileLink = document.createElement("a"); // create link for file
+                    fileLink.href = url;
+                    fileLink.download = "New.ods"; // download filename
+                    document.body.appendChild(fileLink); // append file link to download
+                    fileLink.click();
+                    fileLink.remove(); // remove file link after click
+                })
+                .catch((error) => {
+                    // Handle error here.
+                });
+        };
+
+        const downloadShpApi = (formData) => {
+            return fetch(`${host1}/get/downloadShp`, {
+                method: "GET",
+            })
+                .then((response) => response.blob())
+                .then((blob) => {
+                    var url = window.URL.createObjectURL(blob); // create url from blob
+                    var fileLink = document.createElement("a"); // create link for file
+                    fileLink.href = url;
+                    fileLink.download = "Shapefile.shp"; // download filename
+                    document.body.appendChild(fileLink); // append file link to download
+                    fileLink.click();
+                    fileLink.remove(); // remove file link after click
+                })
+                .catch((error) => {
+                    // Handle error here.
+                });
+        };
+
+        const downloadKmlApi = (formData) => {
+            return fetch(`${host1}/get/downloadKml`, {
+                method: "GET",
+            })
+                .then((response) => response.blob())
+                .then((blob) => {
+                    var url = window.URL.createObjectURL(blob); // create url from blob
+                    var fileLink = document.createElement("a"); // create link for file
+                    fileLink.href = url;
+                    fileLink.download = "New.kml"; // download filename
+                    document.body.appendChild(fileLink); // append file link to download
+                    fileLink.click();
+                    fileLink.remove(); // remove file link after click
+                })
+                .catch((error) => {
+                    // Handle error here.
+                });
+        };
+
+        const refreshTable = () => {
+            table.clear().draw();
+        };
+
+        const init = () => {
+            // layerWMS.getSource().refresh();
+            layerWMTS.getSource().refresh();
+        };
+
+        const changeLayer = (layer) => {
+            layerWMTS
+                .getSource()
+                .setUrl(
+                    `https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`
+                );
+            // layerWMS.getSource().updateParams({ 'LAYERS': layer });
+        };
+
+        const switchWMTS = () => {
+            // layerWMS.setVisible(false);
+            layerWMTS.setVisible(true);
+        };
+
+        const switchWMS = () => {
+            layerWMTS.setVisible(false);
+            // layerWMS.setVisible(true);
+        };
+
+        const update = () => {
+            const opacity = parseFloat($("#opacity-input").val());
+            layerWMTS.setOpacity(opacity);
+            $("#opacity-output").val(opacity.toFixed(2));
+        };
+
+        const refreshVector = () => {
+            vSource.clear(true);
+            vector.clear(true);
+        };
+
+        // function addInteraction() {
+        //     draw = new ol.interaction.Draw({
+        //         source: vector,
+        //         type: 'None'
+        //     });
+        //     map.addInteraction(draw);
+        //     snap = new ol.interaction.Snap({ source: vSource });
+        //     map.addInteraction(snap);
+        // }
+
+        // listener
+        // 上傳 file
+        $("form").on("submit", async function (event) {
+            event.preventDefault();
+            if ($(".file-uploader")[0].files.length > 0) {
+                const formData = new FormData();
+                let fileName = $(".file-uploader")[0].files[0].name;
+                let strAry = fileName.split(".");
+                let fileExtension = strAry[1];
+                formData.append("file", $(".file-uploader")[0].files[0]);
+                try {
+                    switch (fileExtension) {
+                        case "ods":
+                            await uploadOdsApi(formData);
+                            break;
+                        case "shp":
+                            await uploadShpApi(formData);
+                            break;
+                        case "kml":
+                            await uploadKmlApi(formData);
+                            break;
+                        default:
+                            break;
+                    }
+                } catch (e) {
+                    throw new Error("Oops,", e);
+                }
+                refreshTable();
+                dataInit();
+            }
+        });
+
+        $(".downloadOds").on("click", async function () {
+            await downloadOdsApi();
+        });
+
+        $(".downloadShp").on("click", async function () {
+            await downloadShpApi();
+        });
+
+        $(".downloadKml").on("click", async function () {
+            await downloadKmlApi();
+        });
+
+        // map
+        // 產生popup圖層
+        map.on("singleclick", function (evt) {
+            if ($(".pointInfo").hasClass("selectedInfo")) {
+                map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+                    // 查看點位
+                    if (feature && feature.C.features.length == 1) {
+                        const coordinate = evt.coordinate;
+                        let lonLat = ol.proj.toLonLat(coordinate);
+                        $(".popup-sure").hide();
+                        $(".popup-closer").hide();
+                        $(".popup-sure-info").show();
+                        $("#popup-content").html(pointInfoModel);
+                        $("#popup-content .popCategory").val(
+                            feature.C.features[0].get("category")
+                        );
+                        $("#popup-content .popPrice").val(
+                            feature.C.features[0].get("price")
+                        );
+                        $("#popup-content .popPhone").val(
+                            feature.C.features[0].get("phone")
+                        );
+                        $("#popup-content .popAddress").val(
+                            feature.C.features[0].get("address")
+                        );
+                        $("#popup-content .popLocation").val(lonLat);
+                        overlay.setPosition(coordinate);
+                    }
+                });
+            } else {
+                const features = vSource.getFeatures();
+                const coordinate = evt.coordinate;
+                let lonLat = ol.proj.toLonLat(coordinate);
+                map.getTargetElement().style.pointerEvents = "none";
+                $(".popup-sure").show();
+                $(".popup-closer").show();
+                $(".popup-sure-info").hide();
+                $("#popup-content").html(pointAddModel);
+                $("#popup-content .popLocation").val(lonLat);
+                overlay.setPosition(coordinate);
+            }
+        });
+
+        $(".pointInfo").on("click", function () {
+            $(".pointInfo").addClass("selectedInfo");
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+        });
+
+        // 座標
+        // 確定popup圖層及新增Point
+        $(".popup-sure").on("click", async function () {
+            let location = $("#popup-content .popLocation").val();
+            let category = $("#popup-content .popCategory").val();
+            let price = $("#popup-content .popPrice").val();
+            let phone = $("#popup-content .popPhone").val();
+            let address = $("#popup-content .popAddress").val();
+            if ([category, price, address, phone, location].includes("")) {
+                alert("值不能為空");
+            } else {
+                map.getTargetElement().style.pointerEvents = "auto";
+                //切割 Location 取 Lat、Longitude
+                let strAry = location.split(",");
+                let lat = parseFloat(strAry[0]);
+                let longitude = parseFloat(strAry[1]);
+                const body = {
+                    category: category,
+                    price: price,
+                    address: address,
+                    phone: phone,
+                    lat: lat,
+                    longitude: longitude,
+                };
+                try {
+                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                        mode: "cors",
+                        body: JSON.stringify(body),
+                        headers: {
+                            "content-type": "application/json",
+                        },
+                        method: "POST",
+                    });
+                } catch (e) {
+                    throw new Error("Oops,", e);
+                } finally {
+                    refreshVector();
+                    refreshTable();
+                    dataInit();
+                    overlay.setPosition(undefined);
+                }
+            }
+        });
+
+        // 取消popup圖層及Point
+        $(".popup-closer").on("click", function (e) {
+            map.getTargetElement().style.pointerEvents = "auto";
+            let features = vector.getFeatures();
+            let lastFeature = features[features.length - 1];
+            vector.removeFeature(lastFeature);
+            overlay.setPosition(undefined);
+            $(".popup-closer").blur();
+            return false;
+        });
+
+        $(".popup-sure-info").on("click", function () {
+            overlay.setPosition(undefined);
+        });
+
+        // 底圖切換
+        $(".dropdown-baselayer").on("click", "li", function (e) {
+            let layer = e.currentTarget.getAttribute("data-id");
+            init();
+            changeLayer(layer);
+            $(".layerCategory").html(e.target.innerHTML);
+            if ($(this).hasClass("selectedLayer")) {
+            } else {
+                $(".dropdown-layer li").removeClass("selectedLayer");
+                $(this).addClass("selectedLayer");
+            }
+        });
+
+        // 圖層套疊
+        $(".dropdown-baselayer").on("click", "li", function (e) {
+            let layer = e.currentTarget.getAttribute("data-id");
+            init();
+            changeLayer(layer);
+            $(".layerCategory").html(e.target.innerHTML);
+            if ($(this).hasClass("selectedLayer")) {
+            } else {
+                $(".dropdown-layer li").removeClass("selectedLayer");
+                $(this).addClass("selectedLayer");
+            }
+        });
+
+
+        $(".defaultType").on("click", function (e) {
+            $(".pointInfo").removeClass("selectedInfo");
+            $(".defaultType").html(e.target.innerHTML);
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            // addInteraction();
+        });
+
+        $("#opacity-input").on("input", update);
+
+        // table
+        $("#table_id_example tbody").on("click", "tr", async function (e) {
+            $(this).toggleClass("selected");
+            switch ($(".selected").length) {
+                case 0:
+                    $(".removeButton").attr("disabled", true);
+                    $(".updateButton").attr("disabled", true);
+                    break;
+                case 1:
+                    $(".removeButton").attr("disabled", false);
+                    $(".updateButton").attr("disabled", false);
+                    break;
+                default:
+                    $(".removeButton").attr("disabled", false);
+                    $(".updateButton").attr("disabled", true);
+                    break;
+            }
+            if ($("#table_id_example tbody tr").hasClass("selected")) {
+                let geometryArr = $(e.currentTarget)
+                    .find("td:eq(" + 4 + ")")
+                    .html();
+                let geometry = geometryArr.split(",");
+                let location = ol.proj.fromLonLat([
+                    parseFloat(geometry[0]),
+                    parseFloat(geometry[1]),
+                ]);
+                point.push(parseInt(e.currentTarget.getAttribute("data-id")));
+                view.animate({
+                    center: [location[0], location[1]],
+                    duration: 2000,
+                    zoom: 12,
+                });
+            }
+        });
+
+        // 行新增
+        $("#addRow").on("click", async function () {
+            let category = $(".addCategory").val();
+            let price = $(".addPrice").val();
+            let address = $(".addAddress").val();
+            let phone = $(".addPhone").val();
+            let location = $(".addLocation").val();
+            if ([Category, price, address, phone, location].includes("")) {
+                alert("值不能為空");
+            } else {
+                let strAry = location.split(",");
+                let Lat = parseFloat(strAry[0]);
+                let Longitude = parseFloat(strAry[1]);
+                let body = {
+                    category: $(".addCategory").val(),
+                    price: $(".addPrice").val(),
+                    address: $(".addAddress").val(),
+                    phone: $(".addPhone").val(),
+                    lat: Lat,
+                    longitude: Longitude,
+                };
+                try {
+                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                        mode: "cors",
+                        body: JSON.stringify(body),
+                        headers: {
+                            "content-type": "application/json",
+                        },
+                        method: "POST",
+                    });
+                } catch (e) {
+                    throw new Error("Oops,", e);
+                } finally {
+                    refreshVector();
+                    refreshTable();
+                    dataInit();
+                    $(".addCategory").val("");
+                    $(".addpPrice").val("");
+                    $(".addAddress").val("");
+                    $(".addPhone").val("");
+                    $(".addLocation").val("");
+                    $("#addModel").modal("toggle");
+                }
+            }
+        });
+
+        //行刪除
+        $("#removeRow").click(async function () {
+            let i = 0;
+            let ids;
+            let location;
+            let idArray = [];
+            let selectedData = table.rows(".selected").nodes();
+            let selectedLength = table.rows(".selected").nodes().length;
+            for (let index = 0; index < selectedLength; index++) {
+                idArray.push($(selectedData[index]).attr("data-id"));
+            }
+            ids = idArray.join(",");
+
+            try {
+                const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
+                    mode: "cors",
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    method: "DELETE",
+                });
+            } catch (e) {
+                throw new Error("Oops,", e);
+            } finally {
+                table.row(".selected").remove().draw(false);
+                $("#removeModel").modal("toggle");
+                $(".updateButton").attr("disabled", true);
+                refreshVector();
+                refreshTable();
+                dataInit();
+            }
+        });
+
+        //行修改
+        $(".updateButton").click(function () {
+            let data = table.row(".selected").node();
+            $(".updateCategory").val(
+                $(data)
+                    .find("td:eq(" + 0 + ")")
+                    .html()
+            );
+            $(".updatePrice").val(
+                $(data)
+                    .find("td:eq(" + 1 + ")")
+                    .html()
+            );
+            $(".updatePhone").val(
+                $(data)
+                    .find("td:eq(" + 2 + ")")
+                    .html()
+            );
+            $(".updateAddress").val(
+                $(data)
+                    .find("td:eq(" + 3 + ")")
+                    .html()
+            );
+            $(".updateLocation").val(
+                $(data)
+                    .find("td:eq(" + 4 + ")")
+                    .html()
+            );
+        });
+
+        $("#updateRow").click(async function () {
+            let i = 0;
+            let data = table.row(".selected").node();
+            let beforeAry = $(data)
+                .find("td:eq(" + 4 + ")")
+                .html()
+                .split(",");
+            let location = $(".updateLocation").val();
+            let afterAry = location.split(",");
+            let id = $(data).attr("data-id");
+            let body = {
+                category: $(".updateCategory").val(),
+                price: $(".updatePrice").val(),
+                address: $(".updateAddress").val(),
+                phone: $(".updatePhone").val(),
+                lat: parseFloat(afterAry[0]),
+                longitude: parseFloat(afterAry[1]),
+            };
+            try {
+                const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
+                    body: JSON.stringify(body),
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    method: "PUT",
+                });
+            } catch (e) {
+                throw new Error("Oops,", e);
+            } finally {
+                $("#updateModel").modal("toggle");
+                refreshVector();
+                refreshTable();
+                dataInit();
+            }
+        });
+
+        // 設定為預設值
+        $(".clearQuery").on("click", function () {
+            $(".areaSelect").val("default");
+            $(".typeSelect").val("default");
+            $(".priceSelect").val("0");
+        });
+
+        //複合式查詢
+        $(".complexQuery").on("click", async function () {
+            let queryArray = [];
+            let params;
+            const queruLength = $(".form-select").length;
+            for (let i = 0; i < 3; i++) {
+                queryArray.push($(".form-select").eq(i).val());
+            }
+            params = queryArray.join(",");
+            try {
+                const response = fetch(
+                    `${host}/api/Restaurant/get/complexQuery/${params}`,
+                    {
+                        headers: {
+                            "content-type": "application/json",
+                        },
+                        method: "Get",
+                    }
+                )
+                    .then((res) => {
+                        return res.json();
+                    })
+                    .then((result) => {
+                        refreshTable();
+                        refreshVector();
+                        result.forEach((element) => {
+                            let newTable = table.row
+                                .add([
+                                    element.category,
+                                    element.price,
+                                    element.phone,
+                                    element.address,
+                                    `${element.location.coordinates[0]},${element.location.coordinates[1]}`,
+                                ])
+                                .draw(false)
+                                .node();
+                            $(newTable).attr("data-id", element.id);
+                            var data = new ol.Feature({
+                                id: element.id,
+                                category: element.Category,
+                                price: parseInt(element.price),
+                                phone: element.phone,
+                                address: element.address,
+                                geometry: new ol.geom.Point(
+                                    ol.proj.transform(
+                                        [
+                                            element.location.coordinates[0],
+                                            element.location.coordinates[1],
+                                        ],
+                                        "EPSG:4326",
+                                        "EPSG:3857"
+                                    )
+                                ),
+                            });
+                            vSource.addFeature(data);
+                        });
+                    });
+            } catch (error) {
+                console.log(`Error: ${error}`);
+            }
+        });
+
+        map.addLayer(layerWMTS);
+        // addInteraction();
+        dataInit();
+
     </script>
     <!-- Bootstrap5.0 js -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-      integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"
-      integrity="sha384-lpyLfhYuitXl2zRZ5Bn2fqnhNAKOAaM/0Kr9laMspuaMiZfGmfwRNFh8HlMy49eQ"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-lpyLfhYuitXl2zRZ5Bn2fqnhNAKOAaM/0Kr9laMspuaMiZfGmfwRNFh8HlMy49eQ"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>
