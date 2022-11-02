@@ -110,7 +110,7 @@
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col-12 mt-2">
-                                    <button type="button" class="btn btn-danger clearQuery">
+                                    <button type="button" class="btn btn-danger" onclick="clearQuery()">
                                         清空查詢
                                     </button>
                                     <button type="button" class="btn btn-primary complexQuery">
@@ -429,16 +429,21 @@
                     <button type="button" class="btn btn-secondary layerName">
                         圖層套疊
                     </button>
-                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">Toggle Dropdown</span>
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                     </button>
                     <ul class="dropdown-menu dropdown-layernest">
-                        <li data-id="CITY">
-                            <a class="dropdown-item" href="#">縣市界</a>
+                        <li class="fk">
+                            <a class="dropdown-item" href="#">
+                                <input class="form-check-input" data-id="CITY" type="checkbox" />
+                                <label>縣市界</label>
+                            </a>
                         </li>
-                        <li data-id="TOWN">
-                            <a class="dropdown-item" href="#">鄉鎮區界</a>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <input class="form-check-input" data-id="TOWN" type="checkbox" />
+                                <label>鄉鎮區界</label>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -484,6 +489,7 @@
             select: {
                 style: "multi",
             },
+            bFilter: false,
         });
 
         const format = new ol.format.WKT();
@@ -539,6 +545,7 @@
 
         const clusters = new ol.layer.Vector({
             source: clusterSource,
+            zIndex: 5,
             style: function (feature) {
                 let style;
                 let size = feature.get("features").length;
@@ -700,7 +707,7 @@
                             $(newTable).attr("data-id", element.id);
                             var data = new ol.Feature({
                                 id: element.id,
-                                category: element.Category,
+                                category: element.category,
                                 price: parseInt(element.price),
                                 phone: element.phone,
                                 address: element.address,
@@ -716,6 +723,7 @@
                                 ),
                             });
                             vSource.addFeature(data);
+                            clearQuery();
                         });
                     });
             } catch (error) {
@@ -810,13 +818,17 @@
             layerWMTS.getSource().refresh();
         };
 
-        const changeLayer = (layer) => {
+        const changeBaseLayer = (layer) => {
             layerWMTS
                 .getSource()
                 .setUrl(
                     `https://wmts.nlsc.gov.tw/wmts/${layer}/default/GoogleMapsCompatible/{z}/{y}/{x}`
                 );
             // layerWMS.getSource().updateParams({ 'LAYERS': layer });
+        };
+
+        const changeLayerNest = (layer) => {
+            map.addLayer(layer);
         };
 
         const switchWMTS = () => {
@@ -839,6 +851,15 @@
             vSource.clear(true);
             vector.clear(true);
         };
+
+
+        // 清除查詢為預設值
+        const clearQuery = () => {
+            console.log("@")
+            $(".areaSelect").val("default");
+            $(".typeSelect").val("default");
+            $(".priceSelect").val("0");
+        }
 
         // function addInteraction() {
         //     draw = new ol.interaction.Draw({
@@ -900,7 +921,9 @@
             if ($(".pointInfo").hasClass("selectedInfo")) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     // 查看點位
+                    console.log(feature && feature.C.features.length)
                     if (feature && feature.C.features.length == 1) {
+                        console.log(feature.C.features[0])
                         const coordinate = evt.coordinate;
                         let lonLat = ol.proj.toLonLat(coordinate);
                         $(".popup-sure").hide();
@@ -961,7 +984,7 @@
                 let longitude = parseFloat(strAry[1]);
                 const body = {
                     category: category,
-                    price: price,
+                    price: parseInt(price),
                     address: address,
                     phone: phone,
                     lat: lat,
@@ -1006,7 +1029,7 @@
         $(".dropdown-baselayer").on("click", "li", function (e) {
             let layer = e.currentTarget.getAttribute("data-id");
             init();
-            changeLayer(layer);
+            changeBaseLayer(layer);
             $(".layerCategory").html(e.target.innerHTML);
             if ($(this).hasClass("selectedLayer")) {
             } else {
@@ -1016,16 +1039,32 @@
         });
 
         // 圖層套疊
-        $(".dropdown-baselayer").on("click", "li", function (e) {
+        $(".dropdown-layernest").on("click", "input", function (e) {
             let layer = e.currentTarget.getAttribute("data-id");
-            init();
-            changeLayer(layer);
-            $(".layerCategory").html(e.target.innerHTML);
-            if ($(this).hasClass("selectedLayer")) {
-            } else {
-                $(".dropdown-layer li").removeClass("selectedLayer");
-                $(this).addClass("selectedLayer");
+            switch (layer) {
+                case "CITY":
+                    if ($(this).hasClass("selectedLayer")) {
+                        $(this).removeClass("selectedLayer");
+                        map.removeLayer(layerCITY);
+                    } else {
+                        $(this).addClass("selectedLayer");
+                        map.addLayer(layerCITY);
+                    }
+                    break;
+                case "TOWN":
+                    if ($(this).hasClass("selectedLayer")) {
+                        $(this).removeClass("selectedLayer");
+                        map.removeLayer(layerTOWN);
+                    } else {
+                        $(this).addClass("selectedLayer");
+                        map.addLayer(layerTOWN);
+                    }
+                    break;
+                default:
+                    break;
             }
+
+
         });
 
 
@@ -1081,7 +1120,7 @@
             let address = $(".addAddress").val();
             let phone = $(".addPhone").val();
             let location = $(".addLocation").val();
-            if ([Category, price, address, phone, location].includes("")) {
+            if ([category, price, address, phone, location].includes("")) {
                 alert("值不能為空");
             } else {
                 let strAry = location.split(",");
@@ -1089,7 +1128,7 @@
                 let Longitude = parseFloat(strAry[1]);
                 let body = {
                     category: $(".addCategory").val(),
-                    price: $(".addPrice").val(),
+                    price: parseInt($(".addPrice").val()),
                     address: $(".addAddress").val(),
                     phone: $(".addPhone").val(),
                     lat: Lat,
@@ -1122,17 +1161,23 @@
 
         //行刪除
         $("#removeRow").click(async function () {
+            console.log(vSource.getFeatures())
             let i = 0;
             let ids;
             let location;
             let idArray = [];
             let selectedData = table.rows(".selected").nodes();
             let selectedLength = table.rows(".selected").nodes().length;
+            let features = vSource.getFeatures();
             for (let index = 0; index < selectedLength; index++) {
                 idArray.push($(selectedData[index]).attr("data-id"));
+                features.forEach(element => {
+                    if (element.C.id == $(selectedData[index]).attr("data-id")) {
+                        vSource.removeFeature(element);
+                    }
+                });
             }
             ids = idArray.join(",");
-
             try {
                 const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
                     mode: "cors",
@@ -1140,19 +1185,16 @@
                         "content-type": "application/json",
                     },
                     method: "DELETE",
+
                 });
             } catch (e) {
                 throw new Error("Oops,", e);
             } finally {
-                table.row(".selected").remove().draw(false);
+                table.rows(".selected").remove().draw();
                 $("#removeModel").modal("toggle");
                 $(".updateButton").attr("disabled", true);
-                refreshVector();
-                refreshTable();
-                dataInit();
             }
         });
-
         //行修改
         $(".updateButton").click(function () {
             let data = table.row(".selected").node();
@@ -1195,7 +1237,7 @@
             let id = $(data).attr("data-id");
             let body = {
                 category: $(".updateCategory").val(),
-                price: $(".updatePrice").val(),
+                price: parseInt($(".updatePrice").val()),
                 address: $(".updateAddress").val(),
                 phone: $(".updatePhone").val(),
                 lat: parseFloat(afterAry[0]),
@@ -1217,13 +1259,6 @@
                 refreshTable();
                 dataInit();
             }
-        });
-
-        // 設定為預設值
-        $(".clearQuery").on("click", function () {
-            $(".areaSelect").val("default");
-            $(".typeSelect").val("default");
-            $(".priceSelect").val("0");
         });
 
         //複合式查詢
