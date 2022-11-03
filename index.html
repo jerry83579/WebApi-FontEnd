@@ -111,7 +111,7 @@
                                 <div class="col-4">
                                     <div class="form-outline">
                                         <label class="form-label">搜尋 :</label>
-                                        <input type="search" class="form-control" placeholder="關鍵字" />
+                                        <input type="search" class="form-control search-box" placeholder="關鍵字" />
                                     </div>
                                 </div>
                                 <div class="w-100"></div>
@@ -864,10 +864,10 @@
 
         // 清除查詢為預設值
         const clearQuery = () => {
-            console.log("@")
             $(".areaSelect").val("default");
             $(".typeSelect").val("default");
             $(".priceSelect").val("0");
+            $(".search-box").val("");
         }
 
         function addInteraction() {
@@ -931,6 +931,7 @@
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     // 查看點位
                     console.log(feature && feature.C.features.length)
+                    console.log(feature.C.features[0].get("category"))
                     if (feature && feature.C.features.length == 1) {
                         console.log(feature.C.features[0])
                         const coordinate = evt.coordinate;
@@ -1276,20 +1277,27 @@
         //複合式查詢
         $(".complexQuery").on("click", async function () {
             let queryArray = [];
-            let params;
-            const queruLength = $(".form-select").length;
-            for (let i = 0; i < 3; i++) {
+            let body;
+            let queruLength = $(".form-select").length;
+            if ($(".search-box").val() == "") {
+                queryArray.push("default")
+            }
+            else {
+                queryArray.push($(".search-box").val())
+            }
+            for (let i = 0; i < queruLength; i++) {
                 queryArray.push($(".form-select").eq(i).val());
             }
-            params = queryArray.join(",");
+            console.log(queryArray)
             try {
                 const response = fetch(
-                    `${host}/api/Restaurant/get/complexQuery/${params}`,
+                    `${host}/api/Restaurant/post/complexQuery`,
                     {
                         headers: {
                             "content-type": "application/json",
                         },
-                        method: "Get",
+                        body: JSON.stringify(queryArray),
+                        method: "Post",
                     }
                 )
                     .then((res) => {
@@ -1312,7 +1320,7 @@
                             $(newTable).attr("data-id", element.id);
                             var data = new ol.Feature({
                                 id: element.id,
-                                category: element.Category,
+                                category: element.category,
                                 price: parseInt(element.price),
                                 phone: element.phone,
                                 address: element.address,
