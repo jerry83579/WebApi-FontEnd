@@ -80,7 +80,7 @@
                                 <div class="col-2">
                                     <label class="form-label">區域 :</label>
                                     <select class="form-select areaSelect" aria-label="Default select example">
-                                        <option value="default" selected>請選擇</option>
+                                        <option value="default" selected hidden>請選擇</option>
                                         <option value="西屯區">西屯區</option>
                                         <option value="北屯區">北屯區</option>
                                         <option value="北區">北區</option>
@@ -90,7 +90,7 @@
                                 <div class="col-2">
                                     <label class="form-label">類別 :</label>
                                     <select class="form-select typeSelect" aria-label="Default select example">
-                                        <option value="default" selected>請選擇</option>
+                                        <option value="default" selected hidden>請選擇</option>
                                         <option value="3C產品">3C產品</option>
                                         <option value="家用家具">家用家具</option>
                                         <option value="日常用品">日常用品</option>
@@ -101,7 +101,7 @@
                                 <div class="col-2">
                                     <label class="form-label">價格低於 :</label>
                                     <select class="form-select priceSelect" aria-label="Default select example">
-                                        <option value="0" selected>請選擇</option>
+                                        <option value="default" selected hidden>請選擇</option>
                                         <option value="400">400</option>
                                         <option value="600">600</option>
                                         <option value="800">800</option>
@@ -864,9 +864,10 @@
 
         // 清除查詢為預設值
         const clearQuery = () => {
+            $(".form-select").css('color', 'gray')
             $(".areaSelect").val("default");
             $(".typeSelect").val("default");
-            $(".priceSelect").val("0");
+            $(".priceSelect").val("default");
             $(".search-box").val("");
         }
 
@@ -881,6 +882,11 @@
         }
 
         // listener
+
+        $(".form-select").on('change', function () {
+            $(this).css('color', "black");
+        })
+
         // 上傳 file
         $("form").on("submit", async function (event) {
             event.preventDefault();
@@ -1274,19 +1280,25 @@
             }
         });
 
+
         //複合式查詢
         $(".complexQuery").on("click", async function () {
             let queryArray = [];
             let body;
             let queruLength = $(".form-select").length;
             if ($(".search-box").val() == "") {
-                queryArray.push("default")
+                queryArray.push("")
             }
             else {
                 queryArray.push($(".search-box").val())
             }
             for (let i = 0; i < queruLength; i++) {
-                queryArray.push($(".form-select").eq(i).val());
+                if ($(".form-select").eq(i).val() == "default") {
+                    queryArray.push("");
+                }
+                else {
+                    queryArray.push($(".form-select").eq(i).val());
+                }
             }
             console.log(queryArray)
             try {

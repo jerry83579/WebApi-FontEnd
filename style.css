@@ -30,3 +30,11 @@
     width: 445px;
     height: 400px;
 }
+
+.form-select {
+    color: gray
+}
+
+.form-select option {
+    color: black
+}
