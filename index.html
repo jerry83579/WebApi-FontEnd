@@ -78,7 +78,7 @@
                         <div class="card card-body">
                             <div class="row">
                                 <div class="col-2">
-                                    <label>區域 :</label>
+                                    <label class="form-label">區域 :</label>
                                     <select class="form-select areaSelect" aria-label="Default select example">
                                         <option value="default" selected>請選擇</option>
                                         <option value="西屯區">西屯區</option>
@@ -88,7 +88,7 @@
                                     </select>
                                 </div>
                                 <div class="col-2">
-                                    <label>類別 :</label>
+                                    <label class="form-label">類別 :</label>
                                     <select class="form-select typeSelect" aria-label="Default select example">
                                         <option value="default" selected>請選擇</option>
                                         <option value="3C產品">3C產品</option>
@@ -99,7 +99,7 @@
                                     </select>
                                 </div>
                                 <div class="col-2">
-                                    <label>價格低於 :</label>
+                                    <label class="form-label">價格低於 :</label>
                                     <select class="form-select priceSelect" aria-label="Default select example">
                                         <option value="0" selected>請選擇</option>
                                         <option value="400">400</option>
@@ -108,8 +108,14 @@
                                         <option value="1000">1000</option>
                                     </select>
                                 </div>
+                                <div class="col-4">
+                                    <div class="form-outline">
+                                        <label class="form-label">搜尋 :</label>
+                                        <input type="search" class="form-control" placeholder="關鍵字" />
+                                    </div>
+                                </div>
                                 <div class="w-100"></div>
-                                <div class="col-12 mt-2">
+                                <div class="col-12 p-3">
                                     <button type="button" class="btn btn-danger" onclick="clearQuery()">
                                         清空查詢
                                     </button>
@@ -450,7 +456,7 @@
                 <button type="button" class="btn btn-success defaultType">
                     繪製點位
                 </button>
-                <button type="button" class="btn btn-success pointInfo">
+                <button type="button" class="btn btn-success pointInfo selectedInfo">
                     查看點位
                 </button>
             </div>
@@ -486,6 +492,9 @@
         const pointAddModel = $(".pointAddModel").html();
         const pointInfoModel = $(".pointInfoModel").html();
         const table = $("#table_id_example").DataTable({
+            language: {
+                url: 'http://cdn.datatables.net/plug-ins/1.12.1/i18n/zh-HANT.json'
+            },
             select: {
                 style: "multi",
             },
@@ -861,15 +870,15 @@
             $(".priceSelect").val("0");
         }
 
-        // function addInteraction() {
-        //     draw = new ol.interaction.Draw({
-        //         source: vector,
-        //         type: 'None'
-        //     });
-        //     map.addInteraction(draw);
-        //     snap = new ol.interaction.Snap({ source: vSource });
-        //     map.addInteraction(snap);
-        // }
+        function addInteraction() {
+            draw = new ol.interaction.Draw({
+                source: vector,
+                type: 'Point'
+            });
+            map.addInteraction(draw);
+            snap = new ol.interaction.Snap({ source: vSource });
+            map.addInteraction(snap);
+        }
 
         // listener
         // 上傳 file
@@ -1073,7 +1082,7 @@
             $(".defaultType").html(e.target.innerHTML);
             map.removeInteraction(draw);
             map.removeInteraction(snap);
-            // addInteraction();
+            addInteraction();
         });
 
         $("#opacity-input").on("input", update);
@@ -1171,11 +1180,11 @@
             let features = vSource.getFeatures();
             for (let index = 0; index < selectedLength; index++) {
                 idArray.push($(selectedData[index]).attr("data-id"));
-                features.forEach(element => {
-                    if (element.C.id == $(selectedData[index]).attr("data-id")) {
-                        vSource.removeFeature(element);
-                    }
-                });
+                // features.forEach(element => {
+                //     if (element.C.id == $(selectedData[index]).attr("data-id")) {
+                //         vSource.removeFeature(element);
+                //     }
+                // });
             }
             ids = idArray.join(",");
             try {
@@ -1190,6 +1199,9 @@
             } catch (e) {
                 throw new Error("Oops,", e);
             } finally {
+                refreshVector();
+                refreshTable();
+                dataInit();
                 table.rows(".selected").remove().draw();
                 $("#removeModel").modal("toggle");
                 $(".updateButton").attr("disabled", true);
