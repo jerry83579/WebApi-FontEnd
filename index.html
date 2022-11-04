@@ -79,7 +79,7 @@
                             <div class="row">
                                 <div class="col-2">
                                     <label class="form-label">區域 :</label>
-                                    <select class="form-select areaSelect" aria-label="Default select example">
+                                    <select class="form-select area-select" aria-label="Default select example">
                                         <option value="default" selected hidden>請選擇</option>
                                         <option value="西屯區">西屯區</option>
                                         <option value="北屯區">北屯區</option>
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="col-2">
                                     <label class="form-label">類別 :</label>
-                                    <select class="form-select typeSelect" aria-label="Default select example">
+                                    <select class="form-select category-select" aria-label="Default select example">
                                         <option value="default" selected hidden>請選擇</option>
                                         <option value="3C產品">3C產品</option>
                                         <option value="家用家具">家用家具</option>
@@ -100,7 +100,7 @@
                                 </div>
                                 <div class="col-2">
                                     <label class="form-label">價格低於 :</label>
-                                    <select class="form-select priceSelect" aria-label="Default select example">
+                                    <select class="form-select price-select" aria-label="Default select example">
                                         <option value="default" selected hidden>請選擇</option>
                                         <option value="400">400</option>
                                         <option value="600">600</option>
@@ -692,7 +692,7 @@
         // 獲取資料
         const dataInit = () => {
             try {
-                const response = fetch(`${host}/api/Restaurant/get/info`, {
+                const response = fetch(`${host}/api/shop/get/info`, {
                     headers: {
                         "content-type": "application/json",
                     },
@@ -865,9 +865,9 @@
         // 清除查詢為預設值
         const clearQuery = () => {
             $(".form-select").css('color', 'gray')
-            $(".areaSelect").val("default");
-            $(".typeSelect").val("default");
-            $(".priceSelect").val("default");
+            $(".area-select").val("default");
+            $(".category-select").val("default");
+            $(".price-select").val("default");
             $(".search-box").val("");
         }
 
@@ -1007,7 +1007,7 @@
                     longitude: longitude,
                 };
                 try {
-                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                    const api = await fetch(`${host}/api/shop/post/info`, {
                         mode: "cors",
                         body: JSON.stringify(body),
                         headers: {
@@ -1151,7 +1151,7 @@
                     longitude: Longitude,
                 };
                 try {
-                    const api = await fetch(`${host}/api/Restaurant/post/info`, {
+                    const api = await fetch(`${host}/api/shop/post/info`, {
                         mode: "cors",
                         body: JSON.stringify(body),
                         headers: {
@@ -1195,12 +1195,12 @@
             }
             ids = idArray.join(",");
             try {
-                const api = await fetch(`${host}/api/Restaurant/delete/info/${ids}`, {
+                const api = await fetch(`${host}/api/shop/get/info/${ids}`, {
                     mode: "cors",
                     headers: {
                         "content-type": "application/json",
                     },
-                    method: "DELETE",
+                    method: "Get",
 
                 });
             } catch (e) {
@@ -1263,12 +1263,12 @@
                 longitude: parseFloat(afterAry[1]),
             };
             try {
-                const api = await fetch(`${host}/api/Restaurant/put/info/${id}`, {
+                const api = await fetch(`${host}/api/shop/post/info/${id}`, {
                     body: JSON.stringify(body),
                     headers: {
                         "content-type": "application/json",
                     },
-                    method: "PUT",
+                    method: "POST",
                 });
             } catch (e) {
                 throw new Error("Oops,", e);
@@ -1283,32 +1283,30 @@
 
         //複合式查詢
         $(".complexQuery").on("click", async function () {
-            let queryArray = [];
+            let area;
+            let category;
+            let price;
+            let keyword;
             let body;
-            let queruLength = $(".form-select").length;
-            if ($(".search-box").val() == "") {
-                queryArray.push("")
+            area = ($(".area-select").val() == "default") ? "" : $(".area-select").val();
+            category = ($(".category-select").val() == "default") ? "" : $(".category-select").val();
+            price = ($(".price-select").val() == "default") ? 0 : parseInt($(".price-select").val());
+            keyword = ($(".search-box").val() == "") ? "" : $(".search-box").val();
+            body = {
+                area: area,
+                category: category,
+                price: price,
+                keyword: keyword
             }
-            else {
-                queryArray.push($(".search-box").val())
-            }
-            for (let i = 0; i < queruLength; i++) {
-                if ($(".form-select").eq(i).val() == "default") {
-                    queryArray.push("");
-                }
-                else {
-                    queryArray.push($(".form-select").eq(i).val());
-                }
-            }
-            console.log(queryArray)
+
             try {
                 const response = fetch(
-                    `${host}/api/Restaurant/post/complexQuery`,
+                    `${host}/api/shop/post/complexQuery`,
                     {
                         headers: {
                             "content-type": "application/json",
                         },
-                        body: JSON.stringify(queryArray),
+                        body: JSON.stringify(body),
                         method: "Post",
                     }
                 )
