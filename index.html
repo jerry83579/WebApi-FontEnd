@@ -740,6 +740,21 @@
             }
         };
 
+        const getCurrentData = () => {
+            if ($("tbody tr").eq(0).attr("data-id") != undefined) {
+                let idArray = [];
+                let trCount = $("tbody tr").length;
+                for (let i = 0; i < trCount; i++) {
+                    idArray.push($("tbody tr").eq(i).attr("data-id"))
+                }
+                ids = idArray.join(",");
+                return ids;
+            }
+            else {
+                return "no data"
+            }
+        }
+
         const uploadOdsApi = (formData) => {
             return fetch(`${host1}/post/uploadOds`, {
                 body: formData,
@@ -762,60 +777,74 @@
         };
 
         const downloadOdsApi = (formData) => {
-            return fetch(`${host1}/get/downloadOds`, {
-                method: "GET",
-            })
-                .then((response) => response.blob())
-                .then((blob) => {
-                    var url = window.URL.createObjectURL(blob); // create url from blob
-                    var fileLink = document.createElement("a"); // create link for file
-                    fileLink.href = url;
-                    fileLink.download = "New.ods"; // download filename
-                    document.body.appendChild(fileLink); // append file link to download
-                    fileLink.click();
-                    fileLink.remove(); // remove file link after click
+            if (getCurrentData() !== "no data") {
+                return fetch(`${host1}/get/downloadOds/${ids}`, {
+                    method: "GET",
                 })
-                .catch((error) => {
-                    // Handle error here.
-                });
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        var url = window.URL.createObjectURL(blob); // create url from blob
+                        var fileLink = document.createElement("a"); // create link for file
+                        fileLink.href = url;
+                        fileLink.download = "download.ods"; // download filename
+                        document.body.appendChild(fileLink); // append file link to download
+                        fileLink.click();
+                        fileLink.remove(); // remove file link after click
+                    })
+                    .catch((error) => {
+                        // Handle error here.
+                    });
+            }
+            else {
+                alert("下載資料不能為空")
+            }
         };
 
         const downloadShpApi = (formData) => {
-            return fetch(`${host1}/get/downloadShp`, {
-                method: "GET",
-            })
-                .then((response) => response.blob())
-                .then((blob) => {
-                    var url = window.URL.createObjectURL(blob); // create url from blob
-                    var fileLink = document.createElement("a"); // create link for file
-                    fileLink.href = url;
-                    fileLink.download = "Shapefile.shp"; // download filename
-                    document.body.appendChild(fileLink); // append file link to download
-                    fileLink.click();
-                    fileLink.remove(); // remove file link after click
+            if (getCurrentData() !== "no data") {
+                return fetch(`${host1}/get/downloadShp/${ids}`, {
+                    method: "GET",
                 })
-                .catch((error) => {
-                    // Handle error here.
-                });
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        var url = window.URL.createObjectURL(blob); // create url from blob
+                        var fileLink = document.createElement("a"); // create link for file
+                        fileLink.href = url;
+                        fileLink.download = "shapefile.zip"; // download filename
+                        document.body.appendChild(fileLink); // append file link to download
+                        fileLink.click();
+                        fileLink.remove(); // remove file link after click
+                    })
+                    .catch((error) => {
+                        // Handle error here.
+                    });
+            } else {
+                alert("下載資料不能為空")
+            }
         };
 
         const downloadKmlApi = (formData) => {
-            return fetch(`${host1}/get/downloadKml`, {
-                method: "GET",
-            })
-                .then((response) => response.blob())
-                .then((blob) => {
-                    var url = window.URL.createObjectURL(blob); // create url from blob
-                    var fileLink = document.createElement("a"); // create link for file
-                    fileLink.href = url;
-                    fileLink.download = "New.kml"; // download filename
-                    document.body.appendChild(fileLink); // append file link to download
-                    fileLink.click();
-                    fileLink.remove(); // remove file link after click
+            if (getCurrentData() !== "no data") {
+                return fetch(`${host1}/get/downloadKml/${ids}`, {
+                    method: "GET",
                 })
-                .catch((error) => {
-                    // Handle error here.
-                });
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                        var url = window.URL.createObjectURL(blob); // create url from blob
+                        var fileLink = document.createElement("a"); // create link for file
+                        fileLink.href = url;
+                        fileLink.download = "download.kml"; // download filename
+                        document.body.appendChild(fileLink); // append file link to download
+                        fileLink.click();
+                        fileLink.remove(); // remove file link after click
+                    })
+                    .catch((error) => {
+                        // Handle error here.
+                    });
+            }
+            else {
+                alert("下載資料不能為空")
+            }
         };
 
         const refreshTable = () => {
@@ -890,12 +919,20 @@
         // 上傳 file
         $("form").on("submit", async function (event) {
             event.preventDefault();
+            let fileName;
+            let file;
+            const formData = new FormData();
+            let filesLength = $(".file-uploader")[0].files.length;
             if ($(".file-uploader")[0].files.length > 0) {
-                const formData = new FormData();
-                let fileName = $(".file-uploader")[0].files[0].name;
+                for (let i = 0; i < filesLength; i++) {
+                    file = $(".file-uploader")[0].files[i];
+                    fileName = $(".file-uploader")[0].files[i].name;
+                    formData.append("file[]", file, fileName);
+                }
+
                 let strAry = fileName.split(".");
                 let fileExtension = strAry[1];
-                formData.append("file", $(".file-uploader")[0].files[0]);
+
                 try {
                     switch (fileExtension) {
                         case "ods":
@@ -1079,8 +1116,6 @@
                 default:
                     break;
             }
-
-
         });
 
 
