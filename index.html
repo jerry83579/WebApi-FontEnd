@@ -50,7 +50,7 @@
                 <button type="button" class="btn btn-secondary downloadKml my-2" id="button">
                     <i class="bi bi-download"></i>下載定位點資訊(.kml檔案)
                 </button>
-                <form enctype="multipart/form-data" method="post">
+                <form enctype="multipart/form-data" action="api/uploadOds" method="POST">
                     <div class="input-group">
                         <input type="file" class="form-control file-uploader" id="inputGroupFile04" multiple="multiple"
                             data-target="file-uploader" aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
@@ -130,14 +130,15 @@
             </div>
 
             <div class="mt-2">
-                <table id="table_id_example" class="table table-striped">
+                <table id="table_id_example" class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>訂購類別</th>
                             <th>價格</th>
                             <th>電話</th>
-                            <th>地址</th>
+                            <th style="width:120px">地址</th>
                             <th>座標</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -145,6 +146,14 @@
             </div>
 
             <!-- Modal -->
+            <!--預覽圖片Modal -->
+            <div class="modal fade" id="previewModel" tabindex="-1" aria-labelledby="previewModel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">A</div>
+                    </div>
+                </div>
+            </div>
             <!-- 新增Modal -->
             <div class="modal fade" id="addModel" tabindex="-1" aria-labelledby="addModelLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -498,6 +507,17 @@
             select: {
                 style: "multi",
             },
+            columnDefs: [
+                {
+                    width: "150px",
+                    targets: -1,
+                    data: null,
+                    defaultContent: '<button class="btn previewImg" data-bs-toggle="modal" data-bs-target="#previewModel" type="button"><i class="bi bi-images"></i></button>' + '<button class="btn uploadImg" type="button"><i class="bi bi-file-earmark-arrow-up"></i></button>' + '<button class="btn deleteImg" type="button"><i class="bi bi-trash3-fill"></i></button>',
+                },
+            ],
+            bScrollCollapse: true,
+            sScrollX: "100%",
+            sScrollXInner: "110%",
             bFilter: false,
         });
 
@@ -703,6 +723,8 @@
                     })
                     .then((result) => {
                         result.forEach((element) => {
+                            let img = document.createElement("img");
+                            $(img).attr("href", "http://www.google.com/");
                             let newTable = table.row
                                 .add([
                                     element.category,
@@ -810,7 +832,7 @@
                         var url = window.URL.createObjectURL(blob); // create url from blob
                         var fileLink = document.createElement("a"); // create link for file
                         fileLink.href = url;
-                        fileLink.download = "shapefile.zip"; // download filename
+                        fileLink.download = "download.zip"; // download filename
                         document.body.appendChild(fileLink); // append file link to download
                         fileLink.click();
                         fileLink.remove(); // remove file link after click
@@ -927,7 +949,7 @@
                 for (let i = 0; i < filesLength; i++) {
                     file = $(".file-uploader")[0].files[i];
                     fileName = $(".file-uploader")[0].files[i].name;
-                    formData.append("file[]", file, fileName);
+                    formData.append("files", file);
                 }
 
                 let strAry = fileName.split(".");
@@ -939,6 +961,9 @@
                             await uploadOdsApi(formData);
                             break;
                         case "shp":
+                        case "cpg":
+                        case "dbf":
+                        case "shx":
                             await uploadShpApi(formData);
                             break;
                         case "kml":
@@ -1130,6 +1155,11 @@
         $("#opacity-input").on("input", update);
 
         // table
+        $('#table_id_example tdody').on('click', '.previewImg', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
         $("#table_id_example tbody").on("click", "tr", async function (e) {
             $(this).toggleClass("selected");
             switch ($(".selected").length) {

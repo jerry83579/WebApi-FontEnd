@@ -38,3 +38,13 @@
 .form-select option {
     color: black
 }
+
+.dataTables_length {
+    margin-bottom: 10px;
+}
+
+.previewImg,
+.uploadImg,
+.deleteImg {
+    cursor: pointer;
+}
