@@ -520,7 +520,14 @@
             sScrollXInner: "110%",
             bFilter: false,
         });
-
+        const blueIcon = new ol.style.Icon({
+            scale: 0.5,
+            src: './image/locationBlue.png',
+        });
+        const redIcon = new ol.style.Icon({
+            scale: 0.5,
+            src: './image/locationRed.png',
+        });
         const format = new ol.format.WKT();
         const projection = ol.proj.get("EPSG:3857");
         const styleCache = {};
@@ -532,21 +539,6 @@
         var host1 = "https://localhost:44370";
 
         var point = [];
-
-        let dynamicStyle = {
-            point: new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 10,
-                    fill: new ol.style.Fill({
-                        color: [247, 5, 25, 1],
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: [5, 74, 247, 1],
-                        width: 5,
-                    }),
-                }),
-            }),
-        };
 
         // 初始化中心位置
         const view = new ol.View({
@@ -583,23 +575,15 @@
                     size == 1
                 ) {
                     style = new ol.style.Style({
-                        image: new ol.style.Circle({
-                            radius: 10,
-                            stroke: new ol.style.Stroke({
-                                color: "#fff",
-                            }),
-                            fill: new ol.style.Fill({
-                                color: "#930000",
-                            }),
-                        }),
-                        text: new ol.style.Text({
-                            text: size.toString(),
-                            fill: new ol.style.Fill({
-                                color: "#fff",
-                            }),
-                        }),
+                        image: blueIcon,
                     });
-                } else {
+                }
+                else if (size == 1) {
+                    style = new ol.style.Style({
+                        image: redIcon,
+                    });
+                }
+                else {
                     style = new ol.style.Style({
                         image: new ol.style.Circle({
                             radius: 10,
@@ -632,13 +616,9 @@
                 clusters,
                 new ol.layer.Vector({
                     source: vector,
-                    style: {
-                        "fill-color": "rgba(255, 255, 255, 0.2)",
-                        "stroke-color": "#0072E3",
-                        "stroke-width": 2,
-                        "circle-radius": 7,
-                        "circle-fill-color": "#0072E3",
-                    },
+                    style: new ol.style.Style({
+                        image: redIcon
+                    })
                 }),
             ],
             overlays: [overlay],
@@ -924,6 +904,9 @@
 
         function addInteraction() {
             draw = new ol.interaction.Draw({
+                style: new ol.style.Style({
+                    image: redIcon
+                }),
                 source: vector,
                 type: 'Point'
             });
@@ -998,10 +981,7 @@
             if ($(".pointInfo").hasClass("selectedInfo")) {
                 map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                     // 查看點位
-                    console.log(feature && feature.C.features.length)
-                    console.log(feature.C.features[0].get("category"))
                     if (feature && feature.C.features.length == 1) {
-                        console.log(feature.C.features[0])
                         const coordinate = evt.coordinate;
                         let lonLat = ol.proj.toLonLat(coordinate);
                         $(".popup-sure").hide();
@@ -1155,10 +1135,18 @@
         $("#opacity-input").on("input", update);
 
         // table
-        $('#table_id_example tdody').on('click', '.previewImg', function (e) {
+        $("#table_id_example tbody").on('click', '.previewImg', function (e) {
             e.stopPropagation();
-            e.preventDefault();
-        });
+        })
+
+        $("#table_id_example tbody").on('click', '.uploadImg', function (e) {
+            e.stopPropagation();
+        })
+
+        $("#table_id_example tbody").on('click', '.addImg', function (e) {
+            e.stopPropagation();
+        })
+
 
         $("#table_id_example tbody").on("click", "tr", async function (e) {
             $(this).toggleClass("selected");
@@ -1242,7 +1230,6 @@
 
         //行刪除
         $("#removeRow").click(async function () {
-            console.log(vSource.getFeatures())
             let i = 0;
             let ids;
             let location;
