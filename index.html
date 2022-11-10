@@ -149,13 +149,21 @@
             <!--預覽圖片Modal -->
             <div class="modal fade" id="previewModel" tabindex="-1" aria-labelledby="previewModel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content" style="width: 380px; height: 280px;">
-                        <div class="image-body text-center">
-                            <img class="preview-image" alt="" width="200">
-                            <button type="button" class="btn btn-danger deleteImg my-2">
-                                刪除圖片
+                    <div class="modal-content align-items-center" style="width: 380px; height: 320px;">
+                        <div class="image-body align-items-center justify-content-center border mt-2">
+                            <div class="mt-2">
+                                <img class="preview-image border ms-2" alt="" width="200" height="180">
+                                <button type="button" class="btn btn-danger deleteImg my-2" style="margin-top: 100px;">
+                                    刪除
+                                </button>
+                            </div>
+                            <div class="input-group mt-3 ms-2 w-75">
+                                <input type="file" class="form-control input-upload-img w-50" multiple="multiple"
+                                    data-target="file-uploader" />
+                            </div>
+                            <button type="button" class="btn btn-primary img-upload my-2 ms-2">
+                                上傳
                             </button>
-                            <input type="file">
                         </div>
                     </div>
                 </div>
@@ -793,13 +801,15 @@
                 });
         }
 
-        const uploadImgApi = () => {
-            return fetch(`${host}/api/shop/post/uploadImg`, {
+        const uploadImgApi = (id, formData) => {
+            return fetch(`${host}/api/shop/post/uploadImg/${id}`, {
+                body: formData,
                 method: "POST",
             }).then((response) => response.blob())
                 .then((blob) => {
                     var url = URL.createObjectURL(blob);
                     $(".preview-image").attr("src", url);
+                    $(".preview-image").attr("data-id", id);
                 })
                 .catch((error) => {
                     console.log(error)
@@ -970,6 +980,25 @@
         $(".form-select").on('change', function () {
             $(this).css('color', "black");
         })
+
+        $(".img-upload").on("click", async function (event) {
+            let fileName;
+            let file;
+            const formData = new FormData();
+            let filesLength = $(".input-upload-img")[0].files.length;
+            if ($(".input-upload-img")[0].files.length > 0) {
+                for (let i = 0; i < filesLength; i++) {
+                    file = $(".input-upload-img")[0].files[i];
+                    fileName = $(".input-upload-img")[0].files[i].name;
+                    formData.append("files", file);
+                }
+                let id = parseInt($(".preview-image").attr("data-id"));
+                await uploadImgApi(id, formData);
+
+            }
+        });
+
+
 
         // 上傳 file
         $("form").on("submit", async function (event) {
