@@ -136,7 +136,7 @@
                             <th>訂購類別</th>
                             <th>價格</th>
                             <th>電話</th>
-                            <th style="width:120px">地址</th>
+                            <th style="width:140px">地址</th>
                             <th>座標</th>
                             <th></th>
                         </tr>
@@ -149,8 +149,14 @@
             <!--預覽圖片Modal -->
             <div class="modal fade" id="previewModel" tabindex="-1" aria-labelledby="previewModel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">A</div>
+                    <div class="modal-content" style="width: 380px; height: 280px;">
+                        <div class="image-body text-center">
+                            <img class="preview-image" alt="" width="200">
+                            <button type="button" class="btn btn-danger deleteImg my-2">
+                                刪除圖片
+                            </button>
+                            <input type="file">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -509,10 +515,10 @@
             },
             columnDefs: [
                 {
-                    width: "150px",
+                    width: "45px",
                     targets: -1,
                     data: null,
-                    defaultContent: '<button class="btn previewImg" data-bs-toggle="modal" data-bs-target="#previewModel" type="button"><i class="bi bi-images"></i></button>' + '<button class="btn uploadImg" type="button"><i class="bi bi-file-earmark-arrow-up"></i></button>' + '<button class="btn deleteImg" type="button"><i class="bi bi-trash3-fill"></i></button>',
+                    defaultContent: '<button class="btn previewImg" data-bs-toggle="modal" data-bs-target="#previewModel" type="button"><i class="bi bi-images"></i></button>',
                 },
             ],
             bScrollCollapse: true,
@@ -755,6 +761,50 @@
             else {
                 return "no data"
             }
+        }
+
+        // Api
+        const previewImgApi = (id) => {
+            return fetch(`${host}/api/shop/get/previewImg/${id}`, {
+                method: "GET",
+            }).then((response) => response.blob())
+                .then((blob) => {
+                    var url = URL.createObjectURL(blob);
+                    $(".preview-image").attr("src", url);
+                    $(".preview-image").attr("data-id", id);
+                })
+                .catch((error) => {
+                    console.log(error)
+                    // Handle error here.
+                });
+        }
+
+        const deleteImgApi = (id) => {
+            return fetch(`${host}/api/shop/deleteImg/${id}`, {
+                method: "GET",
+            }).then((response) => response.blob())
+                .then((blob) => {
+                    var url = URL.createObjectURL(blob);
+                    $(".preview-image").attr("src", url);
+                })
+                .catch((error) => {
+                    console.log(error)
+                    // Handle error here.
+                });
+        }
+
+        const uploadImgApi = () => {
+            return fetch(`${host}/api/shop/post/uploadImg`, {
+                method: "POST",
+            }).then((response) => response.blob())
+                .then((blob) => {
+                    var url = URL.createObjectURL(blob);
+                    $(".preview-image").attr("src", url);
+                })
+                .catch((error) => {
+                    console.log(error)
+                    // Handle error here.
+                });
         }
 
         const uploadOdsApi = (formData) => {
@@ -1136,15 +1186,14 @@
 
         // table
         $("#table_id_example tbody").on('click', '.previewImg', function (e) {
+            let id = parseInt($(this).parents('tr').attr("data-id"));
             e.stopPropagation();
+            previewImgApi(id);
         })
 
-        $("#table_id_example tbody").on('click', '.uploadImg', function (e) {
-            e.stopPropagation();
-        })
-
-        $("#table_id_example tbody").on('click', '.addImg', function (e) {
-            e.stopPropagation();
+        $(".deleteImg").on('click', function () {
+            let id = parseInt($(".preview-image").attr("data-id"));
+            deleteImgApi(id);
         })
 
 
